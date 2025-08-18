@@ -1,200 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kay & Amy's Birthday</title>
-<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-<style>
-:root{--bg:#faf0e1;--ink:#45413c;--soft:#fff7fb;--line:#ffd7e6;--accent:#ff86b1;}
-*{box-sizing:border-box} body{margin:0;background:var(--bg);font-family:Quicksand,system-ui,sans-serif;color:var(--ink);padding:20px}
-.wrap{max-width:900px;margin:0 auto}
-.hero{display:block;margin:0 auto 10px;width:min(320px,40vw);height:auto;border-radius:12px}
-h1{margin:.2rem 0;color:var(--accent);text-align:center}
-.card{background:var(--soft);border:2px solid var(--line);border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 8px 18px rgba(0,0,0,.05)}
-.card h2{margin:0 0 10px;color:var(--accent)}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-.slotCard{border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;background:#fff}
-.slotCard .time{font-weight:700;margin-bottom:6px}
-.slotCard .count{font-size:13px;color:#777}
-.pills{display:flex;flex-wrap:wrap;gap:10px}
-.pill{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700}
-.pill[aria-pressed="true"]{background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;border-color:#ff86b1}
-.pill[disabled]{opacity:.4;cursor:not-allowed}
-.input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff}
-.btn{margin-top:12px;padding:12px 20px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;font-weight:700;cursor:pointer}
-.note{font-size:13px;color:#6e6863}
-.warn{color:#b35300}.ok{color:#2b8a3e}
-.names{margin-top:6px;font-size:13px;color:#555;min-height:18px}
-.names strong{color:#333}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>RSVP</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #fff6f9;
+      color: #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: #ffeef6;
+      padding: 25px;
+      border-radius: 20px;
+      width: 450px;
+      box-shadow: 0px 4px 12px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      color: #ff4d94;
+    }
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 6px;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+    .time-slots {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .time-slot {
+      padding: 10px 16px;
+      border: 2px solid #ff99c8;
+      border-radius: 25px;
+      background: #fff;
+      cursor: pointer;
+      transition: 0.2s;
+      user-select: none;
+    }
+    .time-slot.selected {
+      background: #ff99c8;
+      color: #fff;
+      border-color: #ff4d94;
+    }
+    button {
+      background-color: #ff4d94;
+      color: white;
+      border: none;
+      margin-top: 20px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background-color: #e63e82;
+    }
+  </style>
 </head>
 <body>
-<main class="wrap">
-  <img class="hero" src="./kay-amy-polaroid.png" alt="Kay & Amy">
-  <h1>YOU ARE INVITED!!</h1>
-  <h1>Come celebrate with Kay & Amy.</h1>
-
-  <!-- Date & Time + live counts as small cards -->
-  <section class="card">
-    <h2>Date & Time</h2>
-    <p><strong>Tuesday, September 2, 2025</strong></p>
-    <p>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
-    <div id="countGrid" class="grid"></div>
-  </section>
-
-  <!-- RSVP with pill time selection -->
-  <section class="card">
+  <div class="container">
     <h2>RSVP</h2>
-    <form id="rsvpForm" novalidate>
-      <div class="grid" style="grid-template-columns:1fr 1fr">
-        <div>
-          <label>Your Name</label>
-          <input id="name" class="input" required>
-        </div>
-        <div>
-          <label>Your Email</label>
-          <input id="email" class="input" type="email" required>
-        </div>
+
+    <form id="rsvpForm">
+      <label for="name">Your Name</label>
+      <input type="text" id="name" name="name" required />
+
+      <label for="email">Your Email</label>
+      <input type="email" id="email" name="email" required />
+
+      <label>Choose a Time Slot</label>
+      <div class="time-slots" id="timeSlots">
+        <div class="time-slot">11:00 am</div>
+        <div class="time-slot">12:00 pm</div>
+        <div class="time-slot">1:00 pm</div>
+        <div class="time-slot">2:00 pm</div>
+        <div class="time-slot">3:00 pm</div>
+        <div class="time-slot">4:00 pm</div>
+        <div class="time-slot">5:00 pm</div>
+        <div class="time-slot">6:00 pm</div>
+        <div class="time-slot">7:00 pm</div>
+        <div class="time-slot">8:00 pm</div>
+        <div class="time-slot">9:00 pm</div>
+      </div>
+      <input type="hidden" name="slot" id="slot" required />
+
+      <label>Will you attend?</label>
+      <div>
+        <input type="radio" id="yes" name="status" value="yes" required />
+        <label for="yes">Yes 🎉</label>
+        <input type="radio" id="no" name="status" value="no" />
+        <label for="no">No 😢</label>
       </div>
 
-      <p style="margin:12px 0 6px;">Will you attend?</p>
-      <div class="pills" role="radiogroup" aria-label="RSVP">
-        <button type="button" class="pill" id="yesBtn" aria-pressed="false">Yes 🎉</button>
-        <button type="button" class="pill" id="noBtn"  aria-pressed="false">No 😢</button>
-      </div>
-
-      <div id="slotPicker" style="display:none; margin-top:12px;">
-        <p style="margin:0 0 8px;">Choose a time slot ⏰</p>
-        <div id="slotPills" class="pills"></div>
-        <p class="note">Limit 10 guests per slot. Full slots will be disabled.</p>
-      </div>
-
-      <button class="btn" type="submit">Submit RSVP</button>
-      <p id="msg" class="note" role="status" aria-live="polite"></p>
+      <button type="submit">Submit RSVP</button>
     </form>
-  </section>
+  </div>
 
-  <!-- Live names BEFORE location -->
-  <section class="card">
-    <h2>Who’s coming (live)</h2>
-    <div id="namesGrid" class="grid"></div>
-  </section>
+  <script>
+    const slots = document.querySelectorAll(".time-slot");
+    const slotInput = document.getElementById("slot");
 
-  <!-- Location -->
-  <section class="card">
-    <h2>📍 Location</h2>
-    <p>16 Freeman St, Quincy, MA 02170</p>
-    <iframe src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed" width="100%" height="300" style="border:0;border-radius:14px" loading="lazy" allowfullscreen></iframe>
-  </section>
-</main>
-
-<script>
-const API = "https://script.google.com/macros/s/AKfycbwVyeyMx5mPBAcbsm2J4yHWH5KPw8m-eUHGsml2748Cgaz8bJexrg9b54-lKvDWVEXr/exec";
-const SLOT_CAP = 10;
-const SLOTS = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
-let summary = {counts:{}, names:{}};
-
-const yesBtn = document.getElementById('yesBtn');
-const noBtn  = document.getElementById('noBtn');
-const slotPicker = document.getElementById('slotPicker');
-const slotPills = document.getElementById('slotPills');
-const countGrid = document.getElementById('countGrid');
-const namesGrid = document.getElementById('namesGrid');
-const msg = document.getElementById('msg');
-
-let attending = "";         // "yes" | "no"
-let chosenSlot = "";        // one of SLOTS
-
-function setAttend(v){
-  attending = v;
-  yesBtn.setAttribute('aria-pressed', v==='yes');
-  noBtn.setAttribute('aria-pressed',  v==='no');
-  slotPicker.style.display = v==='yes' ? 'block' : 'none';
-}
-
-yesBtn.addEventListener('click', ()=> setAttend('yes'));
-noBtn .addEventListener('click', ()=> setAttend('no'));
-
-function renderCountGrid(){
-  countGrid.innerHTML = "";
-  SLOTS.forEach(s=>{
-    const div = document.createElement('div');
-    div.className='slotCard';
-    div.innerHTML = `<div class="time">${s}</div>
-                     <div class="count">${summary.counts[s]||0}/${SLOT_CAP}</div>`;
-    countGrid.appendChild(div);
-  });
-}
-
-function renderSlotPills(){
-  slotPills.innerHTML = "";
-  SLOTS.forEach(s=>{
-    const n = summary.counts[s]||0;
-    const btn = document.createElement('button');
-    btn.type='button';
-    btn.className='pill';
-    btn.textContent = `${s} — ${n}/${SLOT_CAP}`;
-    btn.disabled = n>=SLOT_CAP;
-    btn.setAttribute('aria-pressed', chosenSlot===s);
-    btn.addEventListener('click', ()=>{
-      chosenSlot = s;
-      [...slotPills.querySelectorAll('.pill')].forEach(b=>b.setAttribute('aria-pressed','false'));
-      btn.setAttribute('aria-pressed','true');
+    slots.forEach(slot => {
+      slot.addEventListener("click", () => {
+        slots.forEach(s => s.classList.remove("selected"));
+        slot.classList.add("selected");
+        slotInput.value = slot.textContent.trim();
+      });
     });
-    slotPills.appendChild(btn);
-  });
-}
 
-function renderNames(){
-  namesGrid.innerHTML = "";
-  SLOTS.forEach(s=>{
-    const div = document.createElement('div');
-    div.className='slotCard';
-    const list = (summary.names[s]||[]);
-    div.innerHTML = `<div class="time">${s}</div>
-                     <div class="count">${list.length}/${SLOT_CAP}</div>
-                     <div class="names">${list.length? `<strong>Guests:</strong> ${list.join(', ')}`:'-'}</div>`;
-    namesGrid.appendChild(div);
-  });
-}
-
-async function loadSummary(){
-  try{
-    const res = await fetch(API + "?action=summary", {cache:"no-store"});
-    const data = await res.json();
-    summary = data.ok ? data : {counts:{},names:{}};
-  }catch{ summary = {counts:{},names:{}}; }
-  renderCountGrid(); renderSlotPills(); renderNames();
-}
-
-document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
-  e.preventDefault(); msg.textContent="";
-
-  const name  = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-
-  if (!name || !email) return msg.textContent="Please enter your name and email.";
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return msg.textContent="Please enter a valid email.";
-  if (!attending) return msg.textContent="Please choose Yes or No.";
-  if (attending==='yes' && !chosenSlot) return msg.textContent="Please choose a time slot.";
-
-  try{
-    const body = new URLSearchParams({name,email,status:attending,slot:chosenSlot});
-    const res = await fetch(API, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, body});
-    if (res.status===409){ msg.innerHTML="<span class='warn'>That slot just filled up. Please pick another.</span>"; await loadSummary(); return; }
-    const data = await res.json().catch(()=>({}));
-    if (data.ok){
-      msg.innerHTML="<span class='ok'>RSVP saved — thank you!</span>";
-      e.target.reset(); setAttend(""); chosenSlot=""; await loadSummary();
-    } else { msg.innerHTML="<span class='warn'>Couldn’t save right now. Please try again.</span>"; }
-  }catch{
-    msg.innerHTML="<span class='warn'>Network error. Check your /exec URL & access.</span>";
-  }
-});
-
-loadSummary();
-</script>
+    document.getElementById("rsvpForm").addEventListener("submit", function(e){
+      if (!slotInput.value) {
+        e.preventDefault();
+        alert("Please select a time slot!");
+      }
+    });
+  </script>
 </body>
 </html>
-

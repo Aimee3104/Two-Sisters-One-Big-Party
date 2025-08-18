@@ -1,136 +1,142 @@
-# Write a lightweight standalone index.html for the user's GitHub Pages
-html = r"""<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Two Sisters, One Big Party</title>
-
-  <!-- Cute, readable fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
+  <meta charset="UTF-8">
+  <title>Kay & Amy's Birthday Invite</title>
   <style>
-    :root{
-      --bg:#fff8f7;
-      --ink:#2b2b2b;
-      --muted:#746f6f;
-      --card:#ffffff;
-      --accent:#74c0fc;
-      --shadow:0 16px 40px rgba(0,0,0,.08);
+    body {
+      font-family: 'Arial', sans-serif;
+      background: #fdf6f9;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      color: #444;
     }
-    *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #ffeef9 0%, transparent 60%),
-        radial-gradient(1200px 600px at 110% 110%, #e7f6ff 0%, transparent 60%),
-        var(--bg);
-      color:var(--ink);
-      padding:24px;
-      display:flex; align-items:center; justify-content:center;
+    .container {
+      max-width: 700px;
+      margin: 40px auto;
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
     }
-    .card{
-      width:min(920px,100%);
-      background:var(--card);
-      border-radius:28px;
-      box-shadow:var(--shadow);
-      overflow:hidden;
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 10px;
+      color: #ff6fa5;
     }
-    header{
-      text-align:center;
-      padding:28px 22px 6px;
+    h2 {
+      margin-top: 30px;
+      font-size: 1.3rem;
+      color: #333;
     }
-    h1.title{
-      font-family:"Baloo 2", cursive;
-      font-size:clamp(24px, 4vw, 38px);
-      margin:0 0 4px;
-      letter-spacing:.3px;
+    p {
+      color: #666;
+      font-size: 1rem;
     }
-    p.phrase{
-      font-family:"Baloo 2", cursive;
-      margin:0 0 12px;
-      color:#7a6d6e;
-      font-size:clamp(16px, 2.5vw, 22px);
+    .form-group {
+      margin: 15px 0;
+      text-align: left;
     }
-    .polaroid{
-      margin: 10px auto 0;
-      width:min(680px, 92%);
-      background:#fdfaf5;
-      border:1px solid #eee5dc;
-      border-radius:18px;
-      padding:18px 18px 12px;
-      box-shadow: 0 12px 30px rgba(0,0,0,.05);
+    label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
     }
-    .polaroid img{width:100%; border-radius:12px; display:block;}
-    .caption{ text-align:center; color:#857a7a; font-size:12px; margin:6px 0 0; }
-    .meta{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px 24px 8px; }
-    .cell{ background:#fafafa; border:1px solid #eee; border-radius:16px; padding:14px 16px; }
-    .cell h4{ font-family:"Baloo 2", cursive; font-size:18px; margin:0 0 6px; }
-    .times{ display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; }
-    .slot{ background:#fff; border:1px dashed #e7d7d0; border-radius:12px; padding:8px 10px; text-align:center; font-size:14px; }
-    .pill{ display:inline-block; margin-top:8px; background:#eef7ff; border-radius:999px; padding:8px 12px; font-size:13px; text-decoration:none; color:#174b82 }
-    footer{ padding: 8px 24px 22px; color:#857a7a; font-size:12px; text-align:center; }
-    @media (max-width:720px){ .meta{ grid-template-columns:1fr; } }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 1rem;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 25px;
+      background: #ff6fa5;
+      color: white;
+      font-size: 1rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff558d;
+    }
+    iframe {
+      border-radius: 12px;
+      width: 100%;
+      height: 300px;
+      border: none;
+      margin-top: 15px;
+    }
   </style>
 </head>
 <body>
-  <main class="card" role="main">
-    <header>
-      <h1 class="title">Two Sisters, One Big Party</h1>
-      <p class="phrase">Kay &amp; Amy’s Sprinkle of Joy ✨🍰</p>
-      <p id="dateLine" aria-live="polite" style="margin:0 0 12px;color:#6b6161;"></p>
-    </header>
+  <div class="container">
+    <h1>🎉 Kay & Amy’s Birthday 🎂</h1>
+    <p>Join us for a fun celebration filled with cake, laughter, and love 💕</p>
 
-    <!-- Image: Put your file at /assets/kay-amy-polaroid.png (or change the src path) -->
-    <section class="polaroid">
-      <img src="assets/kay-amy-polaroid.png" alt="Kay &amp; Amy birthday illustration">
-      <p class="caption">Kay &amp; Amy • Two sisters, one sweet celebration</p>
-    </section>
+    <h2>📅 Date & Time</h2>
+    <p>Sunday, September 7, 2025</p>
+    <p>Time slots available from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
 
-    <section class="meta" aria-label="Event details">
-      <div class="cell">
-        <h4>Available Time Slots</h4>
-        <div class="times" id="slots"></div>
+    <h2>📝 RSVP</h2>
+    <form id="rsvpForm" action="YOUR_GOOGLE_SHEETS_SCRIPT_URL" method="POST">
+      <div class="form-group">
+        <label for="name">Your Name</label>
+        <input type="text" id="name" name="name" required>
       </div>
-      <div class="cell">
-        <h4>Where</h4>
-        <div>16 Freeman St</div>
-        <div>Quincy, MA 02170</div>
-        <a class="pill" href="https://www.google.com/maps/search/?api=1&query=16%20Freeman%20St%2C%20Quincy%2C%20MA%2002170" target="_blank" rel="noopener">Open in Google Maps</a>
+      <div class="form-group">
+        <label for="email">Your Email</label>
+        <input type="email" id="email" name="email" required>
       </div>
-    </section>
+      <div class="form-group">
+        <label for="attending">Will you attend?</label>
+        <select id="attending" name="attending" required>
+          <option value="">-- Select --</option>
+          <option value="Yes">Yes 🎉</option>
+          <option value="No">No 😢</option>
+        </select>
+      </div>
+      <div class="form-group" id="timeSlotGroup" style="display:none;">
+        <label for="timeSlot">Choose a time slot</label>
+        <select id="timeSlot" name="timeSlot">
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="1:00 PM">1:00 PM</option>
+          <option value="2:00 PM">2:00 PM</option>
+          <option value="3:00 PM">3:00 PM</option>
+          <option value="4:00 PM">4:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+          <option value="6:00 PM">6:00 PM</option>
+          <option value="7:00 PM">7:00 PM</option>
+          <option value="8:00 PM">8:00 PM</option>
+          <option value="9:00 PM">9:00 PM</option>
+        </select>
+      </div>
+      <button type="submit">Submit RSVP</button>
+    </form>
 
-    <footer>
-      <div>Made with 💖 for family &amp; friends — see you there!</div>
-    </footer>
-  </main>
+    <h2>📍 Location</h2>
+    <p>16 Freeman St, Quincy, MA 02170</p>
+    <iframe 
+      src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed"
+      allowfullscreen=""
+      loading="lazy">
+    </iframe>
+  </div>
 
-<script>
-  // ---- Configure your date and slots here ----
-  const dateISO = "2025-09-07"; // September 7, 2025
-  const timeSlots = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
-
-  // Render date with correct weekday
-  const weekday = new Date(dateISO + "T12:00:00").toLocaleDateString(undefined, { weekday: "long" });
-  const pretty = new Date(dateISO + "T12:00:00").toLocaleDateString(undefined, { month:"long", day:"numeric", year:"numeric"});
-  document.getElementById("dateLine").textContent = `${pretty} • ${weekday}`;
-
-  // Render slots
-  const list = document.getElementById("slots");
-  timeSlots.forEach(s => {
-    const el = document.createElement("div");
-    el.className = "slot";
-    el.textContent = s;
-    list.appendChild(el);
-  });
-</script>
+  <script>
+    // Show time slots only if "Yes" is selected
+    document.getElementById('attending').addEventListener('change', function() {
+      const timeGroup = document.getElementById('timeSlotGroup');
+      if (this.value === "Yes") {
+        timeGroup.style.display = "block";
+      } else {
+        timeGroup.style.display = "none";
+      }
+    });
+  </script>
 </body>
 </html>
-"""
-path = "/mnt/data/index-standalone.html"
-with open(path, "w", encoding="utf-8") as f:
-    f.write(html)
-path

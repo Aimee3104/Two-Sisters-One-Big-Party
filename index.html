@@ -5,17 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Kay & Amy's Birthday</title>
 
-  <!-- soft, rounded font -->
   <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 
   <style>
     :root{
-      --bg:#faf0e1;       /* page background */
-      --ink:#45413c;      /* text */
-      --soft:#fff7fb;     /* very light pink */
-      --line:#ffd7e6;     /* pastel border */
-      --accent:#ff86b1;   /* pink accent */
-      --accent-2:#8ac8ff; /* baby blue accent */
+      --bg:#faf0e1; --ink:#45413c; --soft:#fff7fb; --line:#ffd7e6;
+      --accent:#ff86b1; --accent-2:#8ac8ff;
     }
     *{box-sizing:border-box}
     body{
@@ -23,36 +18,22 @@
       color:var(--ink); background:var(--bg); text-align:center;
       padding:clamp(12px,3vw,28px);
     }
+    .wrap{ margin:0 auto; max-width:820px; }
 
-    .wrap{
-      margin:0 auto; max-width:820px;
-    }
+    .hero{ display:block; margin:0 auto clamp(14px,3vw,22px);
+      width:clamp(200px, 40vw, 320px); height:auto; border-radius:12px; }
 
-    /* picture – smaller, no frame */
-    .hero{
-      display:block; margin:0 auto clamp(14px,3vw,22px);
-      width:clamp(200px, 40vw, 320px); height:auto; border-radius:12px;
-    }
-
-    h1{
-      margin:0 0 4px; font-size:clamp(24px,4.4vw,34px); color:var(--accent);
-      letter-spacing:.3px;
-    }
+    h1{ margin:0 0 4px; font-size:clamp(24px,4.4vw,34px); color:var(--accent); letter-spacing:.3px; }
     .tagline{ margin:0 0 16px; color:#6e6863; font-size:clamp(14px,2.6vw,16px); }
 
-    /* pastel section cards */
     .card{
       background:var(--soft); border:2px solid var(--line); border-radius:18px;
       padding:clamp(14px,3vw,22px); margin:16px auto; max-width:760px;
-      box-shadow:0 8px 18px rgba(0,0,0,.05);
-      text-align:left;
+      box-shadow:0 8px 18px rgba(0,0,0,.05); text-align:left;
     }
-    .card h2{
-      margin:0 0 10px; font-size:clamp(18px,3.2vw,22px); color:var(--accent);
-    }
+    .card h2{ margin:0 0 10px; font-size:clamp(18px,3.2vw,22px); color:var(--accent); }
     .card p{ margin:6px 0; }
 
-    /* RSVP form – soft inputs */
     form .row{ display:grid; grid-template-columns:1fr 1fr; gap:12px; }
     @media (max-width:680px){ form .row{ grid-template-columns:1fr; } }
 
@@ -64,7 +45,6 @@
     }
     input:focus, select:focus{ border-color:var(--accent); box-shadow:0 0 0 4px rgba(255,134,177,.18); }
 
-    /* yes/no segmented control */
     .seg{ display:flex; gap:10px; flex-wrap:wrap; }
     .seg input{ display:none; }
     .seg label{
@@ -73,37 +53,40 @@
     }
     .seg input:checked + label{ border-color:var(--accent); color:#fff; background:linear-gradient(90deg, var(--accent), #ffa8d0); }
 
-    /* submit button */
     .btn{
       margin-top:12px; padding:12px 20px; border:none; border-radius:14px; cursor:pointer;
-      color:#fff; font-weight:700;
-      background:linear-gradient(90deg, var(--accent), #ffa8d0);
+      color:#fff; font-weight:700; background:linear-gradient(90deg, var(--accent), #ffa8d0);
       box-shadow:0 6px 12px rgba(0,0,0,.08); transition:transform .12s ease;
     }
     .btn:hover{ transform:translateY(-1px); }
 
-    /* map */
-    iframe{ width:100%; height:300px; border:0; border-radius:14px; }
     .note{ color:#7b746c; font-size:13px; margin-top:6px; }
+    .counts{ color:#6e6863; font-size:14px; margin-top:8px; }
+    .warn{ color:#b35300; }
+    .ok{ color:#2b8a3e; }
+
+    iframe{ width:100%; height:300px; border:0; border-radius:14px; }
   </style>
 </head>
 <body>
   <main class="wrap">
     <img class="hero" src="./kay-amy-polaroid.png" alt="Kay & Amy birthday illustration">
+
     <h1>YOU ARE INVITED!!</h1>
     <h1>Come celebrate with Kay & Amy.</h1>
+
     <!-- Date & time -->
     <section class="card">
       <h2>Date & Time</h2>
       <p><strong>Tuesday, September 2, 2025</strong></p>
       <p>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
+      <p id="slotCounts" class="counts"></p>
     </section>
 
-    <!--RSVP -->
+    <!-- RSVP -->
     <section class="card">
-      <h2> RSVP</h2>
-
-      <form id="rsvpForm" action="YOUR_GOOGLE_SHEETS_SCRIPT_URL" method="POST" novalidate>
+      <h2>RSVP</h2>
+      <form id="rsvpForm" novalidate>
         <div class="row">
           <div>
             <label for="name">Your Name</label>
@@ -119,30 +102,18 @@
         <div class="seg" role="radiogroup" aria-label="RSVP">
           <input id="attend-yes" type="radio" name="attending" value="Yes" />
           <label for="attend-yes">Yes 🎉</label>
-
           <input id="attend-no" type="radio" name="attending" value="No" />
           <label for="attend-no">No 😢</label>
         </div>
 
         <div id="slotWrap" style="display:none; margin-top:10px;">
           <label for="timeSlot">Choose a time slot ⏰</label>
-          <select id="timeSlot" name="timeSlot">
-            <option value="11:00 AM">11:00 AM</option>
-            <option value="12:00 PM">12:00 PM</option>
-            <option value="1:00 PM">1:00 PM</option>
-            <option value="2:00 PM">2:00 PM</option>
-            <option value="3:00 PM">3:00 PM</option>
-            <option value="4:00 PM">4:00 PM</option>
-            <option value="5:00 PM">5:00 PM</option>
-            <option value="6:00 PM">6:00 PM</option>
-            <option value="7:00 PM">7:00 PM</option>
-            <option value="8:00 PM">8:00 PM</option>
-            <option value="9:00 PM">9:00 PM</option>
-          </select>
-          <p class="note">Time slot required only if you’re attending.</p>
+          <select id="timeSlot" name="timeSlot"></select>
+          <p class="note">Limit 10 guests per slot. If a slot is full, it will be disabled.</p>
         </div>
 
         <button class="btn" type="submit">Submit RSVP</button>
+        <p id="msg" class="note" role="status" aria-live="polite"></p>
       </form>
     </section>
 
@@ -157,21 +128,100 @@
   </main>
 
   <script>
-    // show/hide time slots depending on RSVP
+    // ===== Config =====
+    const API = "YOUR_APPS_SCRIPT_WEB_APP_URL"; // <-- paste your Apps Script Web App URL here
+    const SLOT_CAP = 10;
+    const timeSlots = ["11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM","8:00 PM","9:00 PM"];
+
     const yes = document.getElementById('attend-yes');
     const no  = document.getElementById('attend-no');
-    const wrap = document.getElementById('slotWrap');
+    const slotWrap = document.getElementById('slotWrap');
+    const slotSelect = document.getElementById('timeSlot');
+    const countsLine = document.getElementById('slotCounts');
+    const msg = document.getElementById('msg');
+
+    // build dropdown initially
+    function buildOptions(counts){
+      slotSelect.innerHTML = ""; // reset
+      timeSlots.forEach(s => {
+        const booked = counts?.[s] ?? 0;
+        const opt = document.createElement('option');
+        opt.value = s;
+        opt.textContent = `${s} — ${booked}/${SLOT_CAP}`;
+        if(booked >= SLOT_CAP){ opt.disabled = true; }
+        slotSelect.appendChild(opt);
+      });
+      countsLine.textContent = "Capacity: " + timeSlots.map(s => `${s} ${counts?.[s] ?? 0}/${SLOT_CAP}`).join(" • ");
+    }
+
+    // load counts from backend
+    async function loadCounts(){
+      if(!API || API.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")){
+        buildOptions({}); // local render only
+        return;
+      }
+      try{
+        const res = await fetch(API + "?action=counts", { method:"GET" });
+        const data = await res.json();
+        if(data && data.ok){ buildOptions(data.counts); }
+        else { buildOptions({}); }
+      }catch(e){ buildOptions({}); }
+    }
+
+    // show/hide time slot select
     [yes, no].forEach(r => r.addEventListener('change', () => {
-      wrap.style.display = yes.checked ? 'block' : 'none';
+      slotWrap.style.display = yes.checked ? 'block' : 'none';
     }));
 
-    // simple client-side validation hint
-    document.getElementById('rsvpForm').addEventListener('submit', (e) => {
-      if (yes.checked && !document.getElementById('timeSlot').value) {
-        e.preventDefault();
-        alert('Please choose a time slot 😊');
+    // submit handler
+    document.getElementById('rsvpForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      msg.textContent = "";
+
+      const name = document.getElementById('name').value.trim();
+      const email = document.getElementById('email').value.trim();
+      const status = yes.checked ? "yes" : (no.checked ? "no" : "");
+      const slot = yes.checked ? slotSelect.value : "";
+
+      if(!name || !email){ msg.textContent = "Please enter your name and email."; return; }
+      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = "Please enter a valid email."; return; }
+      if(status===""){ msg.textContent = "Please choose Yes or No."; return; }
+      if(status==="yes" && !slot){ msg.textContent = "Please choose a time slot."; return; }
+
+      if(!API || API.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")){
+        msg.innerHTML = "<span class='warn'>Backend not connected yet. Add your Apps Script URL to enable shared counts.</span>";
+        return;
+      }
+
+      try{
+        const res = await fetch(API, {
+          method:"POST",
+          headers:{ "Content-Type":"application/json" },
+          body: JSON.stringify({ name, email, status, slot })
+        });
+
+        if(res.status === 409){
+          msg.innerHTML = "<span class='warn'>That slot just filled up. Please pick another.</span>";
+          await loadCounts();
+          return;
+        }
+
+        const data = await res.json();
+        if(data.ok){
+          msg.innerHTML = "<span class='ok'>RSVP saved — thank you!</span>";
+          e.target.reset();
+          slotWrap.style.display = "none";
+          await loadCounts();
+        }else{
+          msg.innerHTML = "<span class='warn'>Couldn’t save right now. Please try again.</span>";
+        }
+      }catch(err){
+        msg.innerHTML = "<span class='warn'>Network error. Try again in a moment.</span>";
       }
     });
+
+    // init
+    loadCounts();
   </script>
 </body>
 </html>

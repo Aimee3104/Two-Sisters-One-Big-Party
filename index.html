@@ -1,257 +1,136 @@
-# Create a simple, cute single-file website (index.html) and package it with your image.
-# We'll copy the latest generated illustration to an assets folder and build a zip the user can upload to GitHub Pages.
-import os, shutil, zipfile, textwrap, json, datetime, urllib.parse, pathlib
-
-# Ensure folders
-base = "/mnt/data/bday_site"
-assets = os.path.join(base, "assets")
-os.makedirs(assets, exist_ok=True)
-
-# Copy the provided image to assets
-src_image = "/mnt/data/Two Sisters, One Big Party.png"
-dst_image = os.path.join(assets, "kay-amy-polaroid.png")
-shutil.copy(src_image, dst_image)
-
-# Event details (the user can edit these later right in the HTML)
-event = {
-    "title": "Two Sisters, One Big Party",
-    "phrase": "Kay & Amy’s Sprinkle of Joy ✨🍰",
-    "date": "2025-09-07",    # YYYY-MM-DD
-    "time_start": "18:00",   # 24h format local
-    "time_end": "21:00",
-    "timezone": "America/New_York",
-    "location_name": "International Community Church",
-    "location_addr": "30 Gordon Street, Allston, MA 02134",
-    "google_maps_query": "International Community Church, 30 Gordon Street, Allston, MA 02134",
-}
-
-# Compose ICS content function
-def build_ics(ev):
-    dtstart = f"{ev['date'].replace('-','')}" + ev['time_start'].replace(":","") + "00"
-    dtend = f"{ev['date'].replace('-','')}" + ev['time_end'].replace(":","") + "00"
-    uid = "kay-amy-bday-" + dtstart + "@invite"
-    ics = f"""BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//KayAmy//Birthday//EN
-BEGIN:VEVENT
-UID:{uid}
-DTSTAMP:{dtstart}Z
-DTSTART;TZID={ev['timezone']}:{dtstart}
-DTEND;TZID={ev['timezone']}:{dtend}
-SUMMARY:{ev['title']}
-LOCATION:{ev['location_name']}\\, {ev['location_addr']}
-DESCRIPTION:{ev['phrase']}
-END:VEVENT
-END:VCALENDAR
-"""
-    return ics
-
-ics_data = build_ics(event)
-ics_data_uri = "data:text/calendar;charset=utf-8," + urllib.parse.quote(ics_data)
-
-# Build index.html
-index_html = f"""<!DOCTYPE html>
+# Write a lightweight standalone index.html for the user's GitHub Pages
+html = r"""<!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>{event['title']}</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-<style>
-  :root{{
-    --bg: #fff8f7;
-    --card: #ffffff;
-    --ink: #2b2b2b;
-    --muted: #6c6c6c;
-    --accent: #74c0fc;
-    --accent2: #ffd8e2;
-    --ribbonPink:#f8b4c7;
-    --ribbonBlue:#b8e0ff;
-  }}
-  html, body {{ height:100%; }}
-  body{{
-    margin:0;
-    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji","Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
-    background: radial-gradient(1200px 600px at 10% -10%, #ffeef9 0%, transparent 60%),
-                radial-gradient(1200px 600px at 110% 110%, #e7f6ff 0%, transparent 60%), var(--bg);
-    color:var(--ink);
-    display:flex; align-items:center; justify-content:center;
-    padding:24px;
-  }}
-  .card{{
-    width: min(920px, 100%);
-    background:var(--card);
-    border-radius:28px;
-    box-shadow: 0 20px 50px rgba(0,0,0,.07);
-    overflow:hidden;
-  }}
-  header{{
-    padding:24px 28px 0 28px;
-  }}
-  .title{{
-    font-family: "Baloo 2", cursive;
-    font-weight:700;
-    letter-spacing:.3px;
-    font-size: clamp(24px, 4vw, 38px);
-    margin:0 0 8px 0;
-  }}
-  .phrase{{
-    font-family: "Baloo 2", cursive;
-    font-size: clamp(16px, 2.5vw, 22px);
-    color:#7a6d6e;
-    margin:0 0 8px 0;
-  }}
-  .polaroid{{
-    margin: 18px auto 0;
-    width: min(680px, 92%);
-    background:#fdfaf5;
-    border:1px solid #eee5dc;
-    border-radius:18px;
-    padding:18px 18px 12px;
-    box-shadow: 0 12px 30px rgba(0,0,0,.05);
-  }}
-  .polaroid img{{ width:100%; border-radius:12px; display:block; }}
-  .meta{{
-    display:grid; grid-template-columns: 1fr 1fr; gap:18px;
-    padding:18px 24px 8px;
-  }}
-  .meta .cell{{
-    background:#fafafa;
-    border:1px solid #eee;
-    border-radius:16px;
-    padding:14px 16px;
-  }}
-  .cell h4{{
-    font-family:"Baloo 2", cursive; font-size:18px; margin:0 0 6px;
-  }}
-  .muted{{ color:var(--muted); font-size:14px; }}
-  .actions{{
-    padding:8px 24px 28px; display:flex; flex-wrap:wrap; gap:12px; align-items:center;
-  }}
-  button{{
-    appearance:none; border:none; cursor:pointer;
-    padding:12px 18px; border-radius:999px; font-weight:600;
-    transition: transform .06s ease, box-shadow .2s ease;
-    box-shadow: 0 8px 18px rgba(0,0,0,.06);
-  }}
-  button.primary{{ background:var(--accent); color:white; }}
-  button.neutral{{ background:#ffe8f1; }}
-  button.ghost{{ background:#eef7ff; }}
-  button:active{{ transform: translateY(1px); }}
-  .pill{{ background:#f7f7f7; border-radius:999px; padding:8px 12px; font-size:13px; }}
-  .ribbons{{ display:flex; gap:10px; margin-left:auto; }}
-  .ribbon{{ width:26px; height:16px; border-radius:6px; position:relative; }}
-  .ribbon:before{{ content:""; position:absolute; width:0; height:0; border-left:6px solid transparent; border-right:6px solid transparent; border-top:10px solid currentColor; left:5px; top:16px; filter:drop-shadow(0 2px 0 rgba(0,0,0,.05)); }}
-  .ribbon.pink{{ color:var(--ribbonPink); background:var(--ribbonPink);}}
-  .ribbon.blue{{ color:var(--ribbonBlue); background:var(--ribbonBlue);}}
-  footer{{ padding: 10px 24px 26px; font-size:12px; color:#857a7a; }}
-  .center{{ text-align:center; }}
-  .small{{ font-size:12px; color:#857a7a }}
-  .counts{{ font-size:13px; color:#6a6a6a; }}
-  @media (max-width:720px){{
-     .meta{{ grid-template-columns:1fr; }}
-  }}
-</style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Two Sisters, One Big Party</title>
+
+  <!-- Cute, readable fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg:#fff8f7;
+      --ink:#2b2b2b;
+      --muted:#746f6f;
+      --card:#ffffff;
+      --accent:#74c0fc;
+      --shadow:0 16px 40px rgba(0,0,0,.08);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #ffeef9 0%, transparent 60%),
+        radial-gradient(1200px 600px at 110% 110%, #e7f6ff 0%, transparent 60%),
+        var(--bg);
+      color:var(--ink);
+      padding:24px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    .card{
+      width:min(920px,100%);
+      background:var(--card);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+    }
+    header{
+      text-align:center;
+      padding:28px 22px 6px;
+    }
+    h1.title{
+      font-family:"Baloo 2", cursive;
+      font-size:clamp(24px, 4vw, 38px);
+      margin:0 0 4px;
+      letter-spacing:.3px;
+    }
+    p.phrase{
+      font-family:"Baloo 2", cursive;
+      margin:0 0 12px;
+      color:#7a6d6e;
+      font-size:clamp(16px, 2.5vw, 22px);
+    }
+    .polaroid{
+      margin: 10px auto 0;
+      width:min(680px, 92%);
+      background:#fdfaf5;
+      border:1px solid #eee5dc;
+      border-radius:18px;
+      padding:18px 18px 12px;
+      box-shadow: 0 12px 30px rgba(0,0,0,.05);
+    }
+    .polaroid img{width:100%; border-radius:12px; display:block;}
+    .caption{ text-align:center; color:#857a7a; font-size:12px; margin:6px 0 0; }
+    .meta{ display:grid; grid-template-columns:1fr 1fr; gap:18px; padding:18px 24px 8px; }
+    .cell{ background:#fafafa; border:1px solid #eee; border-radius:16px; padding:14px 16px; }
+    .cell h4{ font-family:"Baloo 2", cursive; font-size:18px; margin:0 0 6px; }
+    .times{ display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:10px; }
+    .slot{ background:#fff; border:1px dashed #e7d7d0; border-radius:12px; padding:8px 10px; text-align:center; font-size:14px; }
+    .pill{ display:inline-block; margin-top:8px; background:#eef7ff; border-radius:999px; padding:8px 12px; font-size:13px; text-decoration:none; color:#174b82 }
+    footer{ padding: 8px 24px 22px; color:#857a7a; font-size:12px; text-align:center; }
+    @media (max-width:720px){ .meta{ grid-template-columns:1fr; } }
+  </style>
 </head>
 <body>
   <main class="card" role="main">
     <header>
-      <h1 class="title">{event['title']}</h1>
-      <p class="phrase">{event['phrase']}</p>
+      <h1 class="title">Two Sisters, One Big Party</h1>
+      <p class="phrase">Kay &amp; Amy’s Sprinkle of Joy ✨🍰</p>
+      <p id="dateLine" aria-live="polite" style="margin:0 0 12px;color:#6b6161;"></p>
     </header>
 
+    <!-- Image: Put your file at /assets/kay-amy-polaroid.png (or change the src path) -->
     <section class="polaroid">
-      <img src="assets/kay-amy-polaroid.png" alt="Kay and Amy birthday illustration" />
-      <p class="center small">Kay &amp; Amy • Two sisters, one sweet celebration</p>
+      <img src="assets/kay-amy-polaroid.png" alt="Kay &amp; Amy birthday illustration">
+      <p class="caption">Kay &amp; Amy • Two sisters, one sweet celebration</p>
     </section>
 
     <section class="meta" aria-label="Event details">
       <div class="cell">
-        <h4>When</h4>
-        <div>{event['date']} • {event['time_start']} – {event['time_end']} ({event['timezone']})</div>
-        <div class="counts" id="rsvpCounts" aria-live="polite"></div>
+        <h4>Available Time Slots</h4>
+        <div class="times" id="slots"></div>
       </div>
       <div class="cell">
         <h4>Where</h4>
-        <div>{event['location_name']}</div>
-        <div class="muted">{event['location_addr']}</div>
-        <a class="pill" href="https://www.google.com/maps/search/?api=1&query={urllib.parse.quote(event['google_maps_query'])}" target="_blank" rel="noopener">Open in Google Maps</a>
-      </div>
-    </section>
-
-    <section class="actions">
-      <button class="primary" data-rsvp="yes">I’ll be there 🎉</button>
-      <button class="ghost" data-rsvp="maybe">Maybe 🤔</button>
-      <button class="neutral" data-rsvp="no">Can’t make it 💌</button>
-      <a class="pill" id="addCal" href="{ics_data_uri}" download="Kay-Amy-Party.ics">Add to Calendar</a>
-      <button class="pill" id="copyLink" title="Copy this page link">Copy Invite Link</button>
-      <div class="ribbons" aria-hidden="true">
-        <span class="ribbon pink"></span>
-        <span class="ribbon blue"></span>
+        <div>16 Freeman St</div>
+        <div>Quincy, MA 02170</div>
+        <a class="pill" href="https://www.google.com/maps/search/?api=1&query=16%20Freeman%20St%2C%20Quincy%2C%20MA%2002170" target="_blank" rel="noopener">Open in Google Maps</a>
       </div>
     </section>
 
     <footer>
-      <div id="msg" class="small"></div>
+      <div>Made with 💖 for family &amp; friends — see you there!</div>
     </footer>
   </main>
 
 <script>
-/* RSVP with localStorage (client-only) */
-const buttons = document.querySelectorAll("[data-rsvp]");
-const msg = document.getElementById("msg");
-const countsBox = document.getElementById("rsvpCounts");
-const KEY = "kay_amy_rsvp_v1";
-const COUNTS_KEY = "kay_amy_counts_v1";
+  // ---- Configure your date and slots here ----
+  const dateISO = "2025-09-07"; // September 7, 2025
+  const timeSlots = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
 
-function getCounts(){{
-  try {{ return JSON.parse(localStorage.getItem(COUNTS_KEY)) || {{yes:0, maybe:0, no:0}}; }}
-  catch{{ return {{yes:0, maybe:0, no:0}}; }}
-}}
-function setCounts(c){{ localStorage.setItem(COUNTS_KEY, JSON.stringify(c)); }}
-function refreshCounts(){{
-  const c = getCounts();
-  countsBox.textContent = `Local RSVP counts → Yes: ${{c.yes}} · Maybe: ${{c.maybe}} · No: ${{c.no}}`;
-}}
-refreshCounts();
+  // Render date with correct weekday
+  const weekday = new Date(dateISO + "T12:00:00").toLocaleDateString(undefined, { weekday: "long" });
+  const pretty = new Date(dateISO + "T12:00:00").toLocaleDateString(undefined, { month:"long", day:"numeric", year:"numeric"});
+  document.getElementById("dateLine").textContent = `${pretty} • ${weekday}`;
 
-buttons.forEach(b=>b.addEventListener('click', () => {{
-  const value = b.dataset.rsvp;
-  localStorage.setItem(KEY, value);
-  const c = getCounts();
-  c[value] = (c[value]||0) + 1;
-  setCounts(c);
-  refreshCounts();
-  msg.textContent = value === "yes" ? "Yay! We can’t wait to celebrate with you 💖" :
-                    value === "maybe" ? "Got it! Let us know when you decide ✨" :
-                    "We’ll miss you, thanks for letting us know 💌";
-}}));
-
-/* Copy page link */
-document.getElementById('copyLink').addEventListener('click', async () => {{
-  try {{
-    await navigator.clipboard.writeText(window.location.href);
-    msg.textContent = "Link copied! Paste it anywhere to invite friends 🎀";
-  }} catch (e) {{
-    msg.textContent = "Couldn’t copy link — you can copy from the address bar.";
-  }}
-}});
+  // Render slots
+  const list = document.getElementById("slots");
+  timeSlots.forEach(s => {
+    const el = document.createElement("div");
+    el.className = "slot";
+    el.textContent = s;
+    list.appendChild(el);
+  });
 </script>
 </body>
 </html>
 """
-
-with open(os.path.join(base, "index.html"), "w", encoding="utf-8") as f:
-    f.write(index_html)
-
-# Zip everything
-zip_path = "/mnt/data/kay-amy-invite-site.zip"
-with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
-    for root, dirs, files in os.walk(base):
-        for fn in files:
-            fp = os.path.join(root, fn)
-            z.write(fp, arcname=os.path.relpath(fp, base))
-
-base, dst_image, zip_path
+path = "/mnt/data/index-standalone.html"
+with open(path, "w", encoding="utf-8") as f:
+    f.write(html)
+path

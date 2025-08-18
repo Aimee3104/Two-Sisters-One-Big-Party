@@ -128,123 +128,99 @@
   </main>
 
   <script>
-    // ===== Config =====
-    const API = "https://script.google.com/macros/s/AKfycbxeQYwx48SJY6CaifI-qWe1TT1ylXR0QkPV_5vAMcODOeVfmvrTcsTpHk2cFEp72UzkdA/exec";
-    const SLOT_CAP = 10;
-    const timeSlots = ["11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM","8:00 PM","9:00 PM"];
+  // ===== Config =====
+  const API = "https://script.google.com/macros/s/AKfycbxeQYwx48SJY6CaifI-qWe1TT1ylXR0QkPV_5vAMcODOeVfmvrTcsTpHk2cFEp72UzkdA/exec";
+  const SLOT_CAP = 10;
+  const timeSlots = ["11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM","8:00 PM","9:00 PM"];
 
-    const yes = document.getElementById('attend-yes');
-    const no  = document.getElementById('attend-no');
-    const slotWrap = document.getElementById('slotWrap');
-    const slotSelect = document.getElementById('timeSlot');
-    const countsLine = document.getElementById('slotCounts');
-    const msg = document.getElementById('msg');
+  const yes = document.getElementById('attend-yes');
+  const no  = document.getElementById('attend-no');
+  const slotWrap = document.getElementById('slotWrap');
+  const slotSelect = document.getElementById('timeSlot');
+  const countsLine = document.getElementById('slotCounts');
+  const msg = document.getElementById('msg');
 
-    // build dropdown initially
-    function buildOptions(counts){
-      slotSelect.innerHTML = ""; // reset
-      timeSlots.forEach(s => {
-        const booked = counts?.[s] ?? 0;
-        const opt = document.createElement('option');
-        opt.value = s;
-        opt.textContent = `${s} — ${booked}/${SLOT_CAP}`;
-        if(booked >= SLOT_CAP){ opt.disabled = true; }
-        slotSelect.appendChild(opt);
-      });
-      countsLine.textContent = "Capacity: " + timeSlots.map(s => `${s} ${counts?.[s] ?? 0}/${SLOT_CAP}`).join(" • ");
+  // Build dropdown with counts
+  function buildOptions(counts){
+    slotSelect.innerHTML = "";
+    timeSlots.forEach(s => {
+      const booked = counts?.[s] ?? 0;
+      const opt = document.createElement('option');
+      opt.value = s;
+      opt.textContent = `${s} — ${booked}/${SLOT_CAP}`;
+      if (booked >= SLOT_CAP) opt.disabled = true;
+      slotSelect.appendChild(opt);
+    });
+    countsLine.textContent = "Capacity: " + timeSlots.map(s => `${s} ${counts?.[s] ?? 0}/${SLOT_CAP}`).join(" • ");
+  }
+
+  // GET live counts from Apps Script
+  async function loadCounts(){
+    if (!API || API.includes("https://script.google.com/macros/s/AKfycbxeQYwx48SJY6CaifI-qWe1TT1ylXR0QkPV_5vAMcODOeVfmvrTcsTpHk2cFEp72UzkdA/exec")) { buildOptions({}); return; }
+    try {
+      const res = await fetch(API + "?action=counts");
+      const data = await res.json();
+      buildOptions(data && data.ok ? data.counts : {});
+    } catch {
+      buildOptions({});
+    }
+  }
+
+  // Show/hide slot select
+  [yes, no].forEach(r => r.addEventListener('change', () => {
+    slotWrap.style.display = yes.checked ? 'block' : 'none';
+  }));
+
+  // Submit handler (URL-encoded to avoid CORS preflight)
+  document.getElementById('rsvpForm').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    msg.textContent = "";
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const status = yes.checked ? "yes" : (no.checked ? "no" : "");
+    const slot = yes.checked ? slotSelect.value : "";
+
+    if (!name || !email) { msg.textContent = "Please enter your name and email."; return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { msg.textContent = "Please enter a valid email."; return; }
+    if (status === "") { msg.textContent = "Please choose Yes or No."; return; }
+    if (status === "yes" && !slot) { msg.textContent = "Please choose a time slot."; return; }
+
+    if (!API || API.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")){
+      msg.innerHTML = "<span class='warn'>Backend not connected yet. Add your Apps Script URL to enable shared counts.</span>";
+      return;
     }
 
-    // load counts from backend
-    async function loadCounts(){
-      if(!API || API.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")){
-        buildOptions({}); // local render only
+    try {
+      const body = new URLSearchParams({ name, email, status, slot });
+      const res = await fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+        body
+      });
+
+      if (res.status === 409) {
+        msg.innerHTML = "<span class='warn'>That slot just filled up. Please pick another.</span>";
+        await loadCounts();
         return;
       }
-      try {
-  // Send as x-www-form-urlencoded to avoid CORS preflight
-  const body = new URLSearchParams({ name, email, status, slot });
 
-  const res = await fetch(API, {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
-    body
+      const data = await res.json().catch(() => ({}));
+      if (data.ok) {
+        msg.innerHTML = "<span class='ok'>RSVP saved — thank you!</span>";
+        e.target.reset();
+        slotWrap.style.display = "none";
+        await loadCounts();
+      } else {
+        msg.innerHTML = "<span class='warn'>Couldn’t save right now. Please try again.</span>";
+      }
+    } catch (err) {
+      msg.innerHTML = "<span class='warn'>Network error. Make sure your Apps Script deployment is /exec and access is “Anyone”.</span>";
+    }
   });
 
-  if (res.status === 409) {
-    msg.innerHTML = "<span class='warn'>That slot just filled up. Please pick another.</span>";
-    await loadCounts();
-    return;
-  }
-
-  const data = await res.json().catch(() => ({}));
-  if (data.ok) {
-    msg.innerHTML = "<span class='ok'>RSVP saved — thank you!</span>";
-    e.target.reset();
-    slotWrap.style.display = "none";
-    await loadCounts();
-  } else {
-    msg.innerHTML = "<span class='warn'>Couldn’t save right now. Please try again.</span>";
-  }
-} catch (err) {
-  msg.innerHTML = "<span class='warn'>Network error. Check that your Apps Script URL ends with <code>/exec</code> and access is set to “Anyone”.</span>";
-}
-
-    }
-
-    // show/hide time slot select
-    [yes, no].forEach(r => r.addEventListener('change', () => {
-      slotWrap.style.display = yes.checked ? 'block' : 'none';
-    }));
-
-    // submit handler
-    document.getElementById('rsvpForm').addEventListener('submit', async (e) => {
-      e.preventDefault();
-      msg.textContent = "";
-
-      const name = document.getElementById('name').value.trim();
-      const email = document.getElementById('email').value.trim();
-      const status = yes.checked ? "yes" : (no.checked ? "no" : "");
-      const slot = yes.checked ? slotSelect.value : "";
-
-      if(!name || !email){ msg.textContent = "Please enter your name and email."; return; }
-      if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = "Please enter a valid email."; return; }
-      if(status===""){ msg.textContent = "Please choose Yes or No."; return; }
-      if(status==="yes" && !slot){ msg.textContent = "Please choose a time slot."; return; }
-
-      if(!API || API.includes("YOUR_APPS_SCRIPT_WEB_APP_URL")){
-        msg.innerHTML = "<span class='warn'>Backend not connected yet. Add your Apps Script URL to enable shared counts.</span>";
-        return;
-      }
-
-      try{
-        const res = await fetch(API, {
-          method:"POST",
-          headers:{ "Content-Type":"application/json" },
-          body: JSON.stringify({ name, email, status, slot })
-        });
-
-        if(res.status === 409){
-          msg.innerHTML = "<span class='warn'>That slot just filled up. Please pick another.</span>";
-          await loadCounts();
-          return;
-        }
-
-        const data = await res.json();
-        if(data.ok){
-          msg.innerHTML = "<span class='ok'>RSVP saved — thank you!</span>";
-          e.target.reset();
-          slotWrap.style.display = "none";
-          await loadCounts();
-        }else{
-          msg.innerHTML = "<span class='warn'>Couldn’t save right now. Please try again.</span>";
-        }
-      }catch(err){
-        msg.innerHTML = "<span class='warn'>Network error. Try again in a moment.</span>";
-      }
-    });
-
-    // init
-    loadCounts();
-  </script>
+  // Init
+  loadCounts();
+</script>
 </body>
 </html>

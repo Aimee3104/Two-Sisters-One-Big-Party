@@ -69,9 +69,11 @@
 <body>
   <main class="container">
     <!-- Responsive picture (put file at /assets/kay-amy-polaroid.png) -->
-    <figure class="hero-wrap">
-      <img class="hero" src="assets/kay-amy-polaroid.png" alt="Kay & Amy birthday illustration">
-    </figure>
+    <img class="hero"
+     src="assets/kay-amy-polaroid.png"
+     alt="Kay & Amy birthday"
+     onerror="this.outerHTML='<p style=&quot;color:#c00&quot;>Image not found at <code>assets/kay-amy-polaroid.png</code>. Check the file name/path.</p>';">
+
 
     <h1>🎉 Kay & Amy’s Birthday 🎂</h1>
     <p>Two Sisters, One Big Party 💕 Come celebrate with us!</p>

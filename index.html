@@ -129,7 +129,7 @@
 
   <script>
   // ===== Config =====
-  const API = "https://script.google.com/macros/s/AKfycbxeQYwx48SJY6CaifI-qWe1TT1ylXR0QkPV_5vAMcODOeVfmvrTcsTpHk2cFEp72UzkdA/exec";
+  const API = "https://script.google.com/macros/s/AKfycbxUxvMrGq4HveGpZ-4SEaEbvZIpvmB6OexbdYMsRD5oWoloDLZV4y2BnvGPQ-vX9A4Wlw/exec";
   const SLOT_CAP = 10;
   const timeSlots = ["11:00 AM","12:00 PM","1:00 PM","2:00 PM","3:00 PM","4:00 PM","5:00 PM","6:00 PM","7:00 PM","8:00 PM","9:00 PM"];
 
@@ -156,7 +156,7 @@
 
   // GET live counts from Apps Script
   async function loadCounts(){
-    if (!API || API.includes("https://script.google.com/macros/s/AKfycbxeQYwx48SJY6CaifI-qWe1TT1ylXR0QkPV_5vAMcODOeVfmvrTcsTpHk2cFEp72UzkdA/exec")) { buildOptions({}); return; }
+    if (!API || API.includes("https://script.google.com/macros/s/AKfycbxUxvMrGq4HveGpZ-4SEaEbvZIpvmB6OexbdYMsRD5oWoloDLZV4y2BnvGPQ-vX9A4Wlw/exec")) { buildOptions({}); return; }
     try {
       const res = await fetch(API + "?action=counts");
       const data = await res.json();

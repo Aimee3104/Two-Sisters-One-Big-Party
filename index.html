@@ -160,12 +160,35 @@
         buildOptions({}); // local render only
         return;
       }
-      try{
-        const res = await fetch(API + "?action=counts", { method:"GET" });
-        const data = await res.json();
-        if(data && data.ok){ buildOptions(data.counts); }
-        else { buildOptions({}); }
-      }catch(e){ buildOptions({}); }
+      try {
+  // Send as x-www-form-urlencoded to avoid CORS preflight
+  const body = new URLSearchParams({ name, email, status, slot });
+
+  const res = await fetch(API, {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+    body
+  });
+
+  if (res.status === 409) {
+    msg.innerHTML = "<span class='warn'>That slot just filled up. Please pick another.</span>";
+    await loadCounts();
+    return;
+  }
+
+  const data = await res.json().catch(() => ({}));
+  if (data.ok) {
+    msg.innerHTML = "<span class='ok'>RSVP saved — thank you!</span>";
+    e.target.reset();
+    slotWrap.style.display = "none";
+    await loadCounts();
+  } else {
+    msg.innerHTML = "<span class='warn'>Couldn’t save right now. Please try again.</span>";
+  }
+} catch (err) {
+  msg.innerHTML = "<span class='warn'>Network error. Check that your Apps Script URL ends with <code>/exec</code> and access is set to “Anyone”.</span>";
+}
+
     }
 
     // show/hide time slot select

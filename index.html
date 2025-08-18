@@ -5,8 +5,8 @@
   <title>Kay & Amy's Birthday Invite</title>
   <style>
     body {
-      font-family: 'Arial', sans-serif;
-      background: #fdf6f9;
+      font-family: 'Comic Sans MS', 'Arial Rounded MT Bold', sans-serif;
+      background: #fffafc;
       margin: 0;
       padding: 0;
       text-align: center;
@@ -14,21 +14,27 @@
     }
     .container {
       max-width: 700px;
-      margin: 40px auto;
-      background: white;
-      border-radius: 20px;
+      margin: 30px auto;
+      background: #ffffff;
+      border-radius: 25px;
       padding: 30px;
-      box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+      box-shadow: 0 8px 20px rgba(255, 175, 200, 0.3);
+      border: 3px dashed #ffd6e8;
+    }
+    img.hero {
+      max-width: 100%;
+      border-radius: 20px;
+      margin-bottom: 20px;
     }
     h1 {
       font-size: 2rem;
       margin-bottom: 10px;
-      color: #ff6fa5;
+      color: #ff7ea5;
     }
     h2 {
       margin-top: 30px;
       font-size: 1.3rem;
-      color: #333;
+      color: #444;
     }
     p {
       color: #666;
@@ -42,46 +48,56 @@
       display: block;
       margin-bottom: 5px;
       font-weight: bold;
+      color: #ff7ea5;
     }
     input, select {
       width: 100%;
       padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
+      border: 2px solid #ffd6e8;
+      border-radius: 12px;
       font-size: 1rem;
+      background: #fffafc;
     }
     button {
       margin-top: 20px;
       padding: 12px 25px;
-      background: #ff6fa5;
+      background: linear-gradient(90deg, #ff9dcf, #ffa8e2);
       color: white;
       font-size: 1rem;
+      font-weight: bold;
       border: none;
-      border-radius: 10px;
+      border-radius: 15px;
       cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: all 0.2s ease-in-out;
     }
     button:hover {
-      background: #ff558d;
+      transform: scale(1.05);
+      background: linear-gradient(90deg, #ff84bf, #ff94d9);
     }
     iframe {
-      border-radius: 12px;
+      border-radius: 15px;
       width: 100%;
       height: 300px;
       border: none;
       margin-top: 15px;
     }
+    .emoji {
+      font-size: 1.5rem;
+    }
   </style>
 </head>
 <body>
   <div class="container">
+    <img src="Two Sisters, One Big Party.png" alt="Kay & Amy Birthday" class="hero">
     <h1>🎉 Kay & Amy’s Birthday 🎂</h1>
-    <p>Join us for a fun celebration filled with cake, laughter, and love 💕</p>
+    <p>Two Sisters, One Big Party 💕 Come celebrate with us!</p>
 
-    <h2>📅 Date & Time</h2>
-    <p>Sunday, September 7, 2025</p>
-    <p>Time slots available from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
+    <h2 class="emoji">📅 Date & Time</h2>
+    <p><b>Sunday, September 7, 2025</b></p>
+    <p>Choose your slot from <strong>11:00 AM</strong> → <strong>9:00 PM</strong></p>
 
-    <h2>📝 RSVP</h2>
+    <h2 class="emoji">📝 RSVP</h2>
     <form id="rsvpForm" action="YOUR_GOOGLE_SHEETS_SCRIPT_URL" method="POST">
       <div class="form-group">
         <label for="name">Your Name</label>
@@ -100,7 +116,7 @@
         </select>
       </div>
       <div class="form-group" id="timeSlotGroup" style="display:none;">
-        <label for="timeSlot">Choose a time slot</label>
+        <label for="timeSlot">Choose a time slot ⏰</label>
         <select id="timeSlot" name="timeSlot">
           <option value="11:00 AM">11:00 AM</option>
           <option value="12:00 PM">12:00 PM</option>
@@ -115,10 +131,10 @@
           <option value="9:00 PM">9:00 PM</option>
         </select>
       </div>
-      <button type="submit">Submit RSVP</button>
+      <button type="submit">💌 Submit RSVP</button>
     </form>
 
-    <h2>📍 Location</h2>
+    <h2 class="emoji">📍 Location</h2>
     <p>16 Freeman St, Quincy, MA 02170</p>
     <iframe 
       src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed"

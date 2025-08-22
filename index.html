@@ -3,85 +3,69 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1"/>
-<title>Kay & Amy's Birthday — RSVP</title>
-<meta name="description" content="Join Kay & Amy's birthday celebration on Tuesday, September 2, 2025 in Quincy, MA. Pick a time slot and RSVP!">
-<meta name="theme-color" content="#ff86b1">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>Kay & Amy's Birthday</title>
 <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='0.9em' font-size='90'%3E🎉%3C/text%3E%3C/svg%3E">
-<meta property="og:title" content="Kay & Amy's Birthday — RSVP">
-<meta property="og:description" content="Pick a time and RSVP to celebrate with us!">
-<meta property="og:type" content="website">
-<meta property="og:image" content="https://example.com/kay-amy-og.png">
-<meta property="og:locale" content="en_US">
 <style>
-:root{--bg:#faf0e1;--ink:#45413c;--soft:#fff7fb;--line:#ffd7e6;--accent:#ff86b1;--ok:#2b8a3e;--warn:#b35300}
+:root{--bg:#faf0e1;--ink:#45413c;--soft:#fff7fb;--line:#ffd7e6;--accent:#ff86b1;}
 *{box-sizing:border-box}
-html,body{height:100%}
-body{margin:0;background:var(--bg);font-family:Quicksand,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);padding:20px}
-.wrap{max-width:960px;margin:0 auto}
-.hero{display:block;margin:0 auto 12px;width:min(360px,45vw);height:auto;border-radius:14px}
-h1{margin:.2rem 0;color:var(--accent);text-align:center;line-height:1.1}
+body{margin:0;background:var(--bg);font-family:Quicksand,system-ui,sans-serif;color:var(--ink);padding:20px}
+.wrap{max-width:900px;margin:0 auto}
+.hero{display:block;margin:0 auto 10px;width:min(320px,40vw);height:auto;border-radius:12px}
+h1{margin:.2rem 0;color:var(--accent);text-align:center}
 .card{background:var(--soft);border:2px solid var(--line);border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 8px 18px rgba(0,0,0,.05)}
 .card h2{margin:0 0 10px;color:var(--accent)}
 
 .pills{display:flex;flex-wrap:wrap;gap:10px}
-.pill{border:2px solid var(--line);background:#fff;border-radius:999px;padding:10px 16px;cursor:pointer;font-weight:700}
+.pill{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700}
 .pill[aria-pressed="true"]{background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;border-color:#ff86b1}
 .pill[disabled]{opacity:.4;cursor:not-allowed}
 
-label{display:block;font-weight:700;margin:6px 0}
 .input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff}
 .btn{margin-top:12px;padding:12px 20px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;font-weight:700;cursor:pointer}
-.btn[disabled]{opacity:.6;cursor:progress}
 .note{font-size:13px;color:#6e6863}
-.warn{color:var(--warn)}.ok{color:var(--ok)}
+.warn{color:#b35300}.ok{color:#2b8a3e}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+/* “Who’s coming” cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .slotCard{border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;background:#fff}
 .slotCard .time{font-weight:700;margin-bottom:6px}
 .slotCard .count{font-size:13px;color:#777}
 .names{margin-top:6px;font-size:13px;color:#555;min-height:18px}
 .names strong{color:#333}
-
-footer{margin:24px 0;text-align:center;font-size:12px;color:#7a746f}
-.noscript{background:#fffced;border:2px dashed #ffd39c;color:#6a4f00;padding:10px;border-radius:12px;margin:10px 0}
 </style>
 </head>
 <body>
-<main class="wrap" aria-labelledby="title">
-  <img class="hero" src="./kay-amy-polaroid.png" alt="Polaroid collage of Kay and Amy">
-  <h1 id="title">YOU ARE INVITED!!</h1>
-  <h1>Come celebrate with Kay &amp; Amy.</h1>
+<main class="wrap">
+  <img class="hero" src="./kay-amy-polaroid.png" alt="Kay & Amy">
+  <h1>YOU ARE INVITED!!</h1>
+  <h1>Come celebrate with Kay & Amy.</h1>
 
-  <section class="card" aria-labelledby="dt">
-    <h2 id="dt">Date &amp; Time</h2>
+  <!-- Date & Time (no live grid here anymore) -->
+  <section class="card">
+    <h2>Date & Time</h2>
     <p><strong>Tuesday, September 2, 2025</strong></p>
     <p>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
-    <p class="note">Add to your calendar after RSVP (we'll generate an .ics file for your chosen slot).</p>
   </section>
 
-  <section class="card" aria-labelledby="rsvp">
-    <h2 id="rsvp">RSVP</h2>
-    <form id="rsvpForm" novalidate autocomplete="on">
-      <!-- Honeypot against bots -->
-      <input type="text" name="website" id="website" aria-hidden="true" tabindex="-1" style="position:absolute;left:-10000px;opacity:0" autocomplete="off">
-
+  <!-- RSVP with pill time selection -->
+  <section class="card">
+    <h2>RSVP</h2>
+    <form id="rsvpForm" novalidate>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
-          <label for="name">Your Name</label>
-          <input id="name" name="name" class="input" required placeholder="Alex Kim" autocomplete="name">
+          <label>Your Name</label>
+          <input id="name" class="input" required>
         </div>
         <div>
-          <label for="email">Your Email</label>
-          <input id="email" name="email" class="input" type="email" required placeholder="you@example.com" inputmode="email" autocomplete="email">
+          <label>Your Email</label>
+          <input id="email" class="input" type="email" required>
         </div>
       </div>
 
       <p style="margin:12px 0 6px;">Will you attend?</p>
-      <div class="pills" role="radiogroup" aria-label="RSVP choice">
-        <button type="button" class="pill" id="yesBtn" aria-pressed="false" aria-label="Yes, attending">Yes 🎉</button>
-        <button type="button" class="pill" id="noBtn"  aria-pressed="false" aria-label="No, not attending">No 😢</button>
+      <div class="pills" role="radiogroup" aria-label="RSVP">
+        <button type="button" class="pill" id="yesBtn" aria-pressed="false">Yes 🎉</button>
+        <button type="button" class="pill" id="noBtn"  aria-pressed="false">No 😢</button>
       </div>
 
       <div id="slotPicker" style="display:none; margin-top:12px;">
@@ -90,56 +74,38 @@ footer{margin:24px 0;text-align:center;font-size:12px;color:#7a746f}
         <p class="note">Limit 10 guests per slot. Full slots will be disabled.</p>
       </div>
 
-      <button class="btn" id="submitBtn" type="submit">Submit RSVP</button>
+      <button class="btn" type="submit">Submit RSVP</button>
       <p id="msg" class="note" role="status" aria-live="polite"></p>
     </form>
   </section>
 
-  <section class="card" aria-labelledby="live">
-    <h2 id="live">Who’s coming (live)</h2>
+  <!-- Live names BEFORE location -->
+  <section class="card">
+    <h2>Who’s coming (live)</h2>
     <div id="namesGrid" class="grid"></div>
   </section>
 
-  <section class="card" aria-labelledby="loc">
-    <h2 id="loc">📍 Location</h2>
-    <address>16 Freeman St, Quincy, MA 02170</address>
-    <p><a href="https://maps.google.com/?q=16+Freeman+St,+Quincy,+MA+02170" target="_blank" rel="noopener">Open in Google Maps</a></p>
-    <iframe title="Map of 16 Freeman St, Quincy, MA 02170" src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed" width="100%" height="300" style="border:0;border-radius:14px" loading="lazy" allowfullscreen></iframe>
+  <!-- Location -->
+  <section class="card">
+    <h2>📍 Location</h2>
+    <p>16 Freeman St, Quincy, MA 02170</p>
+    <iframe src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed" width="100%" height="300" style="border:0;border-radius:14px" loading="lazy" allowfullscreen></iframe>
   </section>
-
-  <noscript>
-    <div class="noscript">JavaScript is required to load live capacity and submit the RSVP form.</div>
-  </noscript>
-
-  <footer>
-    Made with ♥ for friends and family — Kay &amp; Amy
-  </footer>
 </main>
 
 <script>
-// ====== CONFIG ======
 const API   = "https://script.google.com/macros/s/AKfycbwVyeyMx5mPBAcbsm2J4yHWH5KPw8m-eUHGsml2748Cgaz8bJexrg9b54-lKvDWVEXr/exec";
 const CAP   = 10;
 const SLOTS = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
-const EVENT = {
-  title: "Kay & Amy's Birthday",
-  // Event is rolling by slots on Sept 2, 2025 in America/New_York
-  date: "2025-09-02",
-  tz: "America/New_York",
-  location: "16 Freeman St, Quincy, MA 02170",
-  description: "Come celebrate with Kay & Amy! Choose your slot and RSVP."
-};
 
 let summary = {counts:{}, names:{}};
 
-// ====== ELEMENTS ======
 const yesBtn     = document.getElementById('yesBtn');
 const noBtn      = document.getElementById('noBtn');
 const slotPicker = document.getElementById('slotPicker');
 const slotPills  = document.getElementById('slotPills');
 const namesGrid  = document.getElementById('namesGrid');
 const msg        = document.getElementById('msg');
-const submitBtn  = document.getElementById('submitBtn');
 
 let attending = "";   // "yes" | "no"
 let chosenSlot = "";  // one of SLOTS
@@ -153,13 +119,7 @@ function setAttend(v){
 yesBtn.addEventListener('click', ()=> setAttend('yes'));
 noBtn .addEventListener('click', ()=> setAttend('no'));
 
-// Keyboard support for pills
-[yesBtn,noBtn].forEach(btn=>{
-  btn.addEventListener('keydown', (e)=>{
-    if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btn.click(); }
-  });
-});
-
+// build the selectable slot pills (with live capacity)
 function renderSlotPills(){
   slotPills.innerHTML = "";
   SLOTS.forEach(s=>{
@@ -170,17 +130,16 @@ function renderSlotPills(){
     btn.textContent = `${s} — ${n}/${CAP}`;
     btn.disabled = n>=CAP;
     btn.setAttribute('aria-pressed', chosenSlot===s);
-    btn.setAttribute('aria-label', `Choose ${s} (${n} of ${CAP} taken)`);
     btn.addEventListener('click', ()=>{
       chosenSlot = s;
       [...slotPills.querySelectorAll('.pill')].forEach(b=>b.setAttribute('aria-pressed','false'));
       btn.setAttribute('aria-pressed','true');
     });
-    btn.addEventListener('keydown',(e)=>{ if(e.key==='Enter' || e.key===' '){ e.preventDefault(); btn.click(); }});
     slotPills.appendChild(btn);
   });
 }
 
+// live names per slot
 function renderNames(){
   namesGrid.innerHTML = "";
   SLOTS.forEach(s=>{
@@ -189,13 +148,9 @@ function renderNames(){
     const list = (summary.names[s]||[]);
     div.innerHTML = `<div class="time">${s}</div>
                      <div class="count">${list.length}/${CAP}</div>
-                     <div class="names">${list.length? `<strong>Guests:</strong> ${list.map(n=>escapeHtml(n)).join(', ')}`:'-'}</div>`;
+                     <div class="names">${list.length? `<strong>Guests:</strong> ${list.join(', ')}`:'-'}</div>`;
     namesGrid.appendChild(div);
   });
-}
-
-function escapeHtml(str){
-  return str.replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[m]));
 }
 
 async function loadSummary(){
@@ -208,108 +163,37 @@ async function loadSummary(){
   renderNames();
 }
 
-// Generate ICS after successful RSVP (attending yes)
-function makeIcs(slot){
-  // slot like "5:00 pm" in EVENT.date and EVENT.tz -> compute DTSTART/DTEND
-  const [time, mer] = slot.split(' ');
-  let [h, m] = time.split(':').map(Number);
-  if(mer.toLowerCase()==='pm' && h!==12) h+=12;
-  if(mer.toLowerCase()==='am' && h===12) h=0;
-  const start = new Date(`${EVENT.date}T${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:00`);
-  const end   = new Date(start.getTime() + 60*60*1000); // 1 hour per slot
-  const toCal = (d)=> d.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z$/,'Z');
-
-  const ics = [
-    'BEGIN:VCALENDAR',
-    'VERSION:2.0',
-    'PRODID:-//KayAmy//Birthday//EN',
-    'CALSCALE:GREGORIAN',
-    'METHOD:PUBLISH',
-    'BEGIN:VEVENT',
-    `UID:${crypto.randomUUID()}@kay-amy`,
-    `DTSTAMP:${toCal(new Date())}`,
-    `DTSTART:${toCal(start)}`,
-    `DTEND:${toCal(end)}`,
-    `SUMMARY:${EVENT.title}`,
-    `DESCRIPTION:${EVENT.description}`,
-    `LOCATION:${EVENT.location}`,
-    'END:VEVENT',
-    'END:VCALENDAR'
-  ].join('\r\n');
-
-  const blob = new Blob([ics], {type:'text/calendar'});
-  const url  = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url; a.download = 'kay-amy-birthday.ics';
-  document.body.appendChild(a); a.click(); a.remove();
-  setTimeout(()=> URL.revokeObjectURL(url), 4000);
-}
-
-// Prevent duplicate submissions
-let submitting = false;
-
-// Persist user's last RSVP to prevent dupes and prefill
-function saveLocal(data){ localStorage.setItem('kayAmyRSVP', JSON.stringify(data)); }
-function loadLocal(){ try{ return JSON.parse(localStorage.getItem('kayAmyRSVP')||'null'); }catch{return null} }
-
-// Form handler
-const form = document.getElementById('rsvpForm');
-form.addEventListener('submit', async (e)=>{
+document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
   e.preventDefault(); msg.textContent="";
-  if(submitting) return;
 
   const name  = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
-  const bot   = document.getElementById('website').value.trim();
-  if(bot){ return; } // silently drop bots
 
   if (!name || !email){ msg.textContent="Please enter your name and email."; return; }
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent="Please enter a valid email."; return; }
   if (!attending){ msg.textContent="Please choose Yes or No."; return; }
   if (attending==='yes' && !chosenSlot){ msg.textContent="Please choose a time slot."; return; }
 
-  // Optimistic UI: disable submit
-  submitting = true; submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
-
   try{
     const body = new URLSearchParams({name,email,status:attending,slot:chosenSlot});
     const res  = await fetch(API, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, body});
 
     if (res.status===409){
-      msg.innerHTML = "<span class='warn'>That slot just filled up. Please pick another.</span>";
+      msg.innerHTML="<span class='warn'>That slot just filled up. Please pick another.</span>";
       await loadSummary();
       return;
     }
 
     const data = await res.json().catch(()=>({}));
     if (data.ok){
-      msg.innerHTML = attending==='yes'
-        ? "<span class='ok'>RSVP saved — see you soon! Your calendar file is downloading.</span>"
-        : "<span class='ok'>Got it — sorry you can’t make it. Thanks for letting us know.</span>";
-
-      saveLocal({name,email,attending,slot:chosenSlot,ts:Date.now()});
-      if(attending==='yes'){ makeIcs(chosenSlot); }
-
-      form.reset(); setAttend(""); chosenSlot="";
+      msg.innerHTML="<span class='ok'>RSVP saved — thank you!</span>";
+      e.target.reset(); setAttend(""); chosenSlot="";
       await loadSummary();
     } else {
-      msg.innerHTML = "<span class='warn'>Couldn’t save right now. Please try again.</span>";
+      msg.innerHTML="<span class='warn'>Couldn’t save right now. Please try again.</span>";
     }
-  }catch(err){
-    msg.innerHTML = "<span class='warn'>Network error. Check your /exec URL & access.</span>";
-  } finally {
-    submitting = false; submitBtn.disabled = false; submitBtn.textContent = 'Submit RSVP';
-  }
-});
-
-// Prefill from localStorage if present
-window.addEventListener('DOMContentLoaded', () => {
-  const prev = loadLocal();
-  if(prev){
-    const n = document.getElementById('name');
-    const e = document.getElementById('email');
-    if(prev.name) n.value = prev.name;
-    if(prev.email) e.value = prev.email;
+  }catch{
+    msg.innerHTML="<span class='warn'>Network error. Check your /exec URL & access.</span>";
   }
 });
 

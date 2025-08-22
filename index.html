@@ -41,12 +41,10 @@
     .foot{margin:24px 0;text-align:center;color:var(--muted);font-size:.9rem}
     @media (max-width:760px){.row{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}}
   </style>
-  <!--
-  -->
 </head>
 <body>
   <main class="wrap">
-    <img class="hero" src="kay-amy-polaroid.png" alt="Two Sisters, One Big Party poster" />
+    <img class="hero" src="kay-amy-polariod.png" alt="Two Sisters, One Big Party poster" />
     <h1>YOU ARE INVITED!!</h1>
     <p class="sub">Come celebrate with Kay & Amy.</p>
 
@@ -79,6 +77,7 @@
         </div>
       </div>
 
+      <!-- Time slot selection is hidden until 'Yes' is chosen -->
       <div id="slotWrap" class="field" hidden>
         <label>Choose a time slot <span aria-hidden="true">⏰</span></label>
         <div class="slots" id="slots"></div>
@@ -101,143 +100,64 @@
       </div>
     </section>
 
-    <!-- FAQ -->
-    <section class="card" aria-labelledby="faq">
-      <h2 id="faq">FAQ</h2>
-      <div class="grid3">
-        <div>
-          <h3 style="margin:.2rem 0">Dress Code</h3>
-          <p>Pastel chic or anything comfy. Party hats welcome!</p>
-        </div>
-        <div>
-          <h3 style="margin:.2rem 0">Gifts</h3>
-          <p>Your presence is the best gift. No pressure.</p>
-        </div>
-        <div>
-          <h3 style="margin:.2rem 0">Food</h3>
-          <p>Snacks, cake, and drinks will be provided.</p>
-        </div>
-      </div>
-    </section>
-
     <p class="foot">Made with ♥ for friends & family.</p>
   </main>
 
   <script>
-    // ====== CONFIG ======
-    const SCRIPT_URL = ""; // <- paste your Apps Script / server endpoint here
+    const SCRIPT_URL = "";
     const SLOT_CAP = 10;
-    // Define your slots (24h time, label will be auto formatted to 12h)
-    const SLOT_TIMES = [
-      [11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0]
-    ];
+    const SLOT_TIMES = [ [11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0] ];
 
-    // ====== UTIL ======
     const $ = (q, el=document) => el.querySelector(q);
-    const fmt12 = (h,m) => {
-      const am = h < 12; let hh = h % 12; if(hh===0) hh=12; const mm = m.toString().padStart(2,'0');
-      return `${hh}:${mm} ${am?"AM":"PM"}`;
-    };
+    const fmt12 = (h,m) => { const am = h < 12; let hh = h % 12; if(hh===0) hh=12; const mm = m.toString().padStart(2,'0'); return `${hh}:${mm} ${am?"AM":"PM"}`; };
 
-    // ====== UI STATE ======
-    let status = null; // 'yes' | 'no'
-    let selectedSlot = null; // 'HH:MM'
-
-    // render slots
-    const slotWrap = $('#slotWrap');
-    const slotsEl = $('#slots');
-    const submitBtn = $('#submit');
-    const msg = $('#msg');
+    let status = null; let selectedSlot = null;
+    const slotWrap = $('#slotWrap'); const slotsEl = $('#slots'); const submitBtn = $('#submit'); const msg = $('#msg');
 
     function renderSlots(disabledSet = new Set()){
       slotsEl.innerHTML = '';
       SLOT_TIMES.forEach(([h,m]) => {
-        const label = `${fmt12(h,m)} — 0/${SLOT_CAP}`; // capacity will be updated if server returns counts
+        const label = `${fmt12(h,m)} — 0/${SLOT_CAP}`;
         const v = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
         const b = document.createElement('button');
-        b.className = 'slot';
-        b.type = 'button';
-        b.textContent = label;
-        b.dataset.value = v;
-        b.disabled = disabledSet.has(v);
-        b.addEventListener('click', ()=>{
-          document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
-          b.classList.add('selected');
-          selectedSlot = v;
-          validate();
-        });
+        b.className = 'slot'; b.type = 'button'; b.textContent = label; b.dataset.value = v; b.disabled = disabledSet.has(v);
+        b.addEventListener('click', ()=>{ document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected')); b.classList.add('selected'); selectedSlot = v; validate(); });
         slotsEl.appendChild(b);
       });
     }
 
-    // init slots
-    renderSlots();
+    // Only render slots when "Yes" is chosen
+    function showSlots(){
+      renderSlots();
+      slotWrap.hidden = false;
+    }
 
-    // attend toggle
     document.querySelectorAll('.chip').forEach(ch =>{
       ch.addEventListener('click', () =>{
         document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));
         ch.setAttribute('aria-pressed','true');
-        status = ch.dataset.status; // yes|no
-        slotWrap.hidden = status !== 'yes';
-        if(status === 'no'){ selectedSlot = null; }
+        status = ch.dataset.status;
+        if(status === 'yes'){
+          showSlots();
+        } else {
+          slotWrap.hidden = true;
+          selectedSlot = null;
+        }
         validate();
       });
     });
 
-    // validate to enable submit
     function validate(){
       const ok = $('#name').value.trim() && $('#email').value.trim() && status && (status==='no' || selectedSlot);
       submitBtn.disabled = !ok;
       msg.textContent = '';
     }
-    ['input','change'].forEach(ev=>{
-      $('#name').addEventListener(ev, validate);
-      $('#email').addEventListener(ev, validate);
-    });
+    ['input','change'].forEach(ev=>{ $('#name').addEventListener(ev, validate); $('#email').addEventListener(ev, validate); });
 
-    // submit
     submitBtn.addEventListener('click', async ()=>{
-      const payload = {
-        name: $('#name').value.trim(),
-        email: $('#email').value.trim(),
-        status,
-        slot: status==='yes' ? selectedSlot : ''
-      };
-
+      const payload = { name: $('#name').value.trim(), email: $('#email').value.trim(), status, slot: status==='yes' ? selectedSlot : '' };
       submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
-
-      try{
-        if(SCRIPT_URL){
-          const res = await fetch(SCRIPT_URL, {
-            method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload)
-          });
-          const json = await res.json();
-          if(!json.ok) throw new Error(json.error || 'Submit failed');
-          // Optional: update capacity if server returns counts like {counts:{'11:00':3,...}}
-          if(json.counts){
-            const full = new Set();
-            const labels = document.querySelectorAll('.slot');
-            labels.forEach(btn=>{
-              const v = btn.dataset.value;
-              const c = json.counts[v] || 0;
-              btn.textContent = `${fmt12(parseInt(v.slice(0,2)), parseInt(v.slice(3))) } — ${c}/${SLOT_CAP}`;
-              const isFull = c >= SLOT_CAP; btn.disabled = isFull; if(isFull) full.add(v);
-            });
-          }
-        } else {
-          await new Promise(r=>setTimeout(r, 500)); // demo delay
-        }
-        msg.textContent = 'Thank you! Your RSVP was recorded.';
-        msg.style.color = '#2e7d32';
-        submitBtn.textContent = 'Submitted ✓';
-      }catch(err){
-        console.error(err);
-        msg.textContent = 'Oops—something went wrong. Please try again later.';
-        msg.style.color = '#c62828';
-        submitBtn.textContent = 'Submit RSVP';
-        validate();
-      }
+      try{ if(SCRIPT_URL){ const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); const json = await res.json(); if(!json.ok) throw new Error(json.error || 'Submit failed'); } else { await new Promise(r=>setTimeout(r, 500)); } msg.textContent = 'Thank you! Your RSVP was recorded.'; msg.style.color = '#2e7d32'; submitBtn.textContent = 'Submitted ✓'; }catch(err){ console.error(err); msg.textContent = 'Oops—something went wrong. Please try again later.'; msg.style.color = '#c62828'; submitBtn.textContent = 'Submit RSVP'; validate(); }
     });
   </script>
 </body>

@@ -44,7 +44,7 @@
 </head>
 <body>
   <main class="wrap">
-    <img class="hero" src="kay-amy-polariod.png" alt="Two Sisters, One Big Party poster" />
+    <img class="hero" src="kay-amy-polariod.png" alt="Polaroid collage of Kay & Amy" />
     <h1>YOU ARE INVITED!!</h1>
     <p class="sub">Come celebrate with Kay & Amy.</p>
 
@@ -104,41 +104,62 @@
   </main>
 
   <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDxm8wlDsCKJIQ6GQtQ6F4sv2sZprvuhTOiEqpyqFNkLA3_hJiCy0GATQ8v7jO9qEZrg/exec";
+    // ===== CONFIG =====
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDxm8wlDsCKJIQ6GQtQ6F4sv2sZprvuhTOiEqpyqFNkLA3_hJiCy0GATQ8v7jO9qEZrg/exec"; // your Web App URL
     const SLOT_CAP = 10;
     const SLOT_TIMES = [ [11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0] ];
 
+    // ===== UTIL =====
     const $ = (q, el=document) => el.querySelector(q);
     const fmt12 = (h,m) => { const am = h < 12; let hh = h % 12; if(hh===0) hh=12; const mm = m.toString().padStart(2,'0'); return `${hh}:${mm} ${am?"AM":"PM"}`; };
 
+    // ===== STATE =====
     let status = null; let selectedSlot = null;
+    let counts = {}; // {"11:00": 3, ...}
+
     const slotWrap = $('#slotWrap'); const slotsEl = $('#slots'); const submitBtn = $('#submit'); const msg = $('#msg');
 
-    function renderSlots(disabledSet = new Set()){
+    // Build slot buttons using current counts
+    function renderSlots(){
       slotsEl.innerHTML = '';
       SLOT_TIMES.forEach(([h,m]) => {
-        const label = `${fmt12(h,m)} — 0/${SLOT_CAP}`;
-        const v = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        const key = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
+        const c = counts[key] || 0;
         const b = document.createElement('button');
-        b.className = 'slot'; b.type = 'button'; b.textContent = label; b.dataset.value = v; b.disabled = disabledSet.has(v);
-        b.addEventListener('click', ()=>{ document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected')); b.classList.add('selected'); selectedSlot = v; validate(); });
+        b.className = 'slot';
+        b.type = 'button';
+        b.dataset.value = key;
+        b.textContent = `${fmt12(h,m)} — ${c}/${SLOT_CAP}`;
+        b.disabled = c >= SLOT_CAP;
+        b.addEventListener('click', ()=>{
+          document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
+          b.classList.add('selected');
+          selectedSlot = key;
+          validate();
+        });
         slotsEl.appendChild(b);
       });
     }
 
-    // Only render slots when "Yes" is chosen
-    function showSlots(){
+    async function refreshCounts(){
+      if(!SCRIPT_URL) return;
+      try{
+        const res = await fetch(`${SCRIPT_URL}?counts=1`, { method:'GET' });
+        const json = await res.json();
+        if(json.ok && json.counts){ counts = json.counts; }
+      }catch(e){ /* ignore */ }
       renderSlots();
-      slotWrap.hidden = false;
     }
 
+    // Show slots only when "Yes" chosen
     document.querySelectorAll('.chip').forEach(ch =>{
-      ch.addEventListener('click', () =>{
+      ch.addEventListener('click', async () =>{
         document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));
         ch.setAttribute('aria-pressed','true');
         status = ch.dataset.status;
         if(status === 'yes'){
-          showSlots();
+          slotWrap.hidden = false;
+          await refreshCounts();
         } else {
           slotWrap.hidden = true;
           selectedSlot = null;
@@ -154,10 +175,39 @@
     }
     ['input','change'].forEach(ev=>{ $('#name').addEventListener(ev, validate); $('#email').addEventListener(ev, validate); });
 
+    // Submit RSVP
     submitBtn.addEventListener('click', async ()=>{
       const payload = { name: $('#name').value.trim(), email: $('#email').value.trim(), status, slot: status==='yes' ? selectedSlot : '' };
       submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
-      try{ if(SCRIPT_URL){ const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) }); const json = await res.json(); if(!json.ok) throw new Error(json.error || 'Submit failed'); } else { await new Promise(r=>setTimeout(r, 500)); } msg.textContent = 'Thank you! Your RSVP was recorded.'; msg.style.color = '#2e7d32'; submitBtn.textContent = 'Submitted ✓'; }catch(err){ console.error(err); msg.textContent = 'Oops—something went wrong. Please try again later.'; msg.style.color = '#c62828'; submitBtn.textContent = 'Submit RSVP'; validate(); }
+      try{
+        const res = await fetch(SCRIPT_URL, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify(payload) });
+        const json = await res.json();
+        if(!json.ok){
+          if(json.error === 'FULL'){
+            msg.textContent = 'That slot just filled up. Please pick another time.';
+          } else {
+            msg.textContent = json.error || 'Submit failed.';
+          }
+          msg.style.color = '#c62828';
+          submitBtn.textContent = 'Submit RSVP';
+          submitBtn.disabled = false;
+          // Update counts if server sent them
+          if(json.counts){ counts = json.counts; renderSlots(); }
+          return;
+        }
+        // Success → update counts live and UI
+        if(json.counts){ counts = json.counts; }
+        renderSlots();
+        msg.textContent = 'Thank you! Your RSVP was recorded.';
+        msg.style.color = '#2e7d32';
+        submitBtn.textContent = 'Submitted ✓';
+      }catch(err){
+        console.error(err);
+        msg.textContent = 'Oops—something went wrong. Please try again later.';
+        msg.style.color = '#c62828';
+        submitBtn.textContent = 'Submit RSVP';
+        validate();
+      }
     });
   </script>
 </body>

@@ -25,7 +25,7 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
 .note{font-size:13px;color:#6e6863}
 .warn{color:#b35300}.ok{color:#2b8a3e}
 
-/* “Who’s coming” cards */
+/* optional: “Who’s coming” section (hidden by default) */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .slotCard{border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;background:#fff}
 .slotCard .time{font-weight:700;margin-bottom:6px}
@@ -40,14 +40,14 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
   <h1>YOU ARE INVITED!!</h1>
   <h1>Come celebrate with Kay & Amy.</h1>
 
-  <!-- Date & Time (no live grid here anymore) -->
+  <!-- Date & Time -->
   <section class="card">
     <h2>Date & Time</h2>
     <p><strong>Tuesday, September 2, 2025</strong></p>
     <p>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
   </section>
 
-  <!-- RSVP with pill time selection -->
+  <!-- RSVP -->
   <section class="card">
     <h2>RSVP</h2>
     <form id="rsvpForm" novalidate>
@@ -85,6 +85,12 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
     <p>16 Freeman St, Quincy, MA 02170</p>
     <iframe src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed" width="100%" height="300" style="border:0;border-radius:14px" loading="lazy" allowfullscreen></iframe>
   </section>
+
+  <!-- Optional “Who’s coming” (kept hidden unless you want to show it) -->
+  <section id="who" class="card" style="display:none">
+    <h2>Who’s Coming</h2>
+    <div id="whoGrid" class="grid"></div>
+  </section>
 </main>
 
 <script>
@@ -92,38 +98,163 @@ const API   = "https://script.google.com/macros/s/AKfycbwDxm8wlDsCKJIQ6GQtQ6F4sv
 const CAP   = 10;
 const SLOTS = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
 
-let summary = {counts:{}, names:{}};
+let summary = { ok:false, counts:{}, names:{} };
+let attending = null;       // "yes" | "no"
+let chosenSlot = null;      // string like "11:00 am"
 
+// Elements
+const yesBtn     = document.getElementById('yesBtn');
+const noBtn      = document.getElementById('noBtn');
+const slotPicker = document.getElementById('slotPicker');
+const slotPills  = document.getElementById('slotPills');
+const msg        = document.getElementById('msg');
+const whoGrid    = document.getElementById('whoGrid');
+
+// Toggle helpers
+function setPressed(el, pressed){
+  el.setAttribute('aria-pressed', pressed ? 'true' : 'false');
+}
+function clearSlotSelection(){
+  chosenSlot = null;
+  Array.from(slotPills.querySelectorAll('.pill')).forEach(p=>setPressed(p,false));
+}
+
+// RSVP buttons
+yesBtn.addEventListener('click', () => {
+  attending = 'yes';
+  setPressed(yesBtn,true); setPressed(noBtn,false);
+  slotPicker.style.display = 'block';
+});
+noBtn.addEventListener('click', () => {
+  attending = 'no';
+  setPressed(yesBtn,false); setPressed(noBtn,true);
+  slotPicker.style.display = 'none';
+  clearSlotSelection();
+});
+
+// Build slot buttons
+function renderSlotPills(){
+  slotPills.innerHTML = '';
+  SLOTS.forEach(slot => {
+    const count = Number(summary.counts?.[slot] || 0);
+    const full  = count >= CAP;
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'pill';
+    btn.textContent = `${slot} ${count}/${CAP}`;
+    if (full) btn.disabled = true;
+    btn.addEventListener('click', () => {
+      // select this slot
+      Array.from(slotPills.querySelectorAll('.pill')).forEach(p=>setPressed(p,false));
+      setPressed(btn,true);
+      chosenSlot = slot;
+    });
+    slotPills.appendChild(btn);
+  });
+}
+
+// Optional: show a simple “who’s coming” grid (kept hidden by default)
+function renderNames(){
+  const whoSection = document.getElementById('who');
+  if (!summary.names || Object.keys(summary.names).length === 0) {
+    whoSection.style.display = 'none';
+    whoGrid.innerHTML = '';
+    return;
+  }
+  whoSection.style.display = 'block';
+  whoGrid.innerHTML = '';
+  SLOTS.forEach(slot => {
+    const people = summary.names?.[slot] || [];
+    if (!people.length) return;
+    const card = document.createElement('div');
+    card.className = 'slotCard';
+    card.innerHTML = `
+      <div class="time">${slot}</div>
+      <div class="count">${people.length}/${CAP}</div>
+      <div class="names">${people.map(n=>`<strong>${escapeHtml(n)}</strong>`).join(', ')}</div>
+    `;
+    whoGrid.appendChild(card);
+  });
+}
+
+// Fetch current counts/names
 async function loadSummary(){
   try{
     const res = await fetch(API + "?action=summary", {cache:"no-store"});
     const data = await res.json();
-    summary = data.ok ? data : {counts:{},names:{}};
-  }catch{ summary = {counts:{},names:{}}; }
+    summary = data && data.ok ? data : {ok:false,counts:{},names:{}};
+  }catch(e){
+    summary = {ok:false,counts:{},names:{}};
+  }
   renderSlotPills();
   renderNames();
 }
 
+// Submit handler
 document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
-  e.preventDefault(); msg.textContent="";
+  e.preventDefault();
+  msg.textContent = '';
 
   const name  = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
 
-  if (!name || !email){ msg.textContent="Please enter your name and email."; return; }
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent="Please enter a valid email."; return; }
-  if (!attending){ msg.textContent="Please choose Yes or No."; return; }
-  if (attending==='yes' && !chosenSlot){ msg.textContent="Please choose a time slot."; return; }
+  if (!name || !email){ msg.textContent = "Please enter your name and email."; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent = "Please enter a valid email."; return; }
+  if (!attending){ msg.textContent = "Please choose Yes or No."; return; }
+  if (attending === 'yes' && !chosenSlot){ msg.textContent = "Please choose a time slot."; return; }
 
   try{
-    const body = new URLSearchParams({name,email,status:attending,slot:chosenSlot});
-    const res  = await fetch(API, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, body});
+    const body = new URLSearchParams({
+      name,
+      email,
+      status: attending,
+      slot: attending === 'yes' ? (chosenSlot || '') : ''
+    });
 
+    const res = await fetch(API, {
+      method: "POST",
+      headers: {"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"},
+      body
+    });
 
-// initial fetch
+    const data = await res.json();
+
+    if (data.ok){
+      msg.textContent = attending === 'yes'
+        ? "Thanks! You're in. See you soon 🎉"
+        : "Thanks for letting us know. We’ll miss you!";
+      msg.className = 'note ok';
+
+      // refresh counts and reset selection where appropriate
+      await loadSummary();
+
+      // Keep name/email for convenience, but clear slot + rsvp choice
+      attending = null;
+      chosenSlot = null;
+      setPressed(yesBtn,false); setPressed(noBtn,false);
+      slotPicker.style.display = 'none';
+      clearSlotSelection();
+    }else{
+      msg.textContent = data.error || "Something went wrong. Please try again.";
+      msg.className = 'note warn';
+      // In case slot just filled up, refresh availability
+      await loadSummary();
+    }
+  }catch(err){
+    msg.textContent = "Network error — please try again.";
+    msg.className = 'note warn';
+  }
+});
+
+// util: simple HTML escaper for names list
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, m => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+}
+
+// initial fetch after everything is wired
 loadSummary();
 </script>
 </body>
 </html>
-
-remove live name part 

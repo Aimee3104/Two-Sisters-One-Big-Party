@@ -123,13 +123,13 @@ noBtn .addEventListener('click', ()=> setAttend('no'));
 function renderSlotPills(){
   slotPills.innerHTML = "";
   SLOTS.forEach(s=>{
-    const n = summary.counts[s]||0;
+    const n = summary.counts[s] || 0;
     const btn = document.createElement('button');
-    btn.type='button';
-    btn.className='pill';
-    btn.textContent = `${s} — ${n}/${CAP}`;
-    btn.disabled = n>=CAP;
-    btn.setAttribute('aria-pressed', chosenSlot===s);
+    btn.type = 'button';
+    btn.className = 'pill';
+    btn.textContent = `${s} — ${n}/${CAP}`;   // <-- backticks
+    btn.disabled = n >= CAP;
+    btn.setAttribute('aria-pressed', String(chosenSlot === s));
     btn.addEventListener('click', ()=>{
       chosenSlot = s;
       [...slotPills.querySelectorAll('.pill')].forEach(b=>b.setAttribute('aria-pressed','false'));
@@ -144,11 +144,13 @@ function renderNames(){
   namesGrid.innerHTML = "";
   SLOTS.forEach(s=>{
     const div = document.createElement('div');
-    div.className='slotCard';
-    const list = (summary.names[s]||[]);
-    div.innerHTML = `<div class="time">${s}</div>
-                     <div class="count">${list.length}/${CAP}</div>
-                     <div class="names">${list.length? `<strong>Guests:</strong> ${list.join(', ')}`:'-'}</div>`;
+    div.className = 'slotCard';
+    const list = summary.names[s] || [];
+    div.innerHTML = `
+      <div class="time">${s}</div>
+      <div class="count">${list.length}/${CAP}</div>
+      <div class="names">${list.length ? '<strong>Guests:</strong> ' + list.join(', ') : '-'}</div>
+    `;
     namesGrid.appendChild(div);
   });
 }

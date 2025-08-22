@@ -1,327 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Kay & Amy's Birthday</title>
-  <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
-  <meta name="description" content="You're invited! Come celebrate with Kay & Amy." />
-  <style>
-    :root{
-      --bg:#faf0e1; --ink:#45413c; --soft:#fff7fb; --line:#ffd7e6; --accent:#ff86b1; --muted:#8a857f; --warn:#8a6d3b; --warnbg:#fff3cd;
-    }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{margin:0;background:var(--bg);font-family:Quicksand,system-ui,sans-serif;color:var(--ink);padding:20px}
-    .wrap{max-width:980px;margin:0 auto}
-    .hero{display:block;margin:0 auto 10px;width:min(320px,45vw);height:auto;border-radius:14px;box-shadow:0 6px 20px rgba(0,0,0,.06)}
-    h1{margin:.2rem 0;color:var(--accent);text-align:center;letter-spacing:.5px}
-    h2{margin:.2rem 0 1rem}
-    p, label, small{color:var(--muted)}
-    .sub{margin-top:0;text-align:center;color:var(--ink);opacity:.85}
-    .card{background:var(--soft);border:2px solid var(--line);border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 6px 14px rgba(255,134,177,.08)}
-    .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-    .field{display:flex;flex-direction:column;gap:8px}
-    input[type=text], input[type=email]{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;outline:none;font:inherit}
-    input[type=text]:focus, input[type=email]:focus{border-color:var(--accent)}
-    .seg{display:inline-grid;grid-auto-flow:column;gap:8px;background:#fff;border:2px solid var(--line);border-radius:999px;padding:6px}
-    .chip{border:none;background:#fff;border-radius:999px;padding:8px 14px;font-weight:600;cursor:pointer;transition:.15s}
-    .chip[aria-pressed=true]{background:var(--accent);color:#fff;transform:translateY(-1px)}
-    .slots{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-    .slot{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;cursor:pointer;font-weight:600}
-    .slot.selected{background:var(--accent);color:#fff;border-color:var(--accent)}
-    .slot:disabled{opacity:.45;cursor:not-allowed}
-    .btn{appearance:none;border:none;background:var(--accent);color:#fff;border-radius:12px;padding:12px 16px;font-weight:700;cursor:pointer;box-shadow:0 8px 16px rgba(255,134,177,.3);transition:.15s}
-    .btn:disabled{opacity:.5;cursor:not-allowed;box-shadow:none}
-    .btn:hover:not(:disabled){transform:translateY(-1px)}
-    .help{font-size:.85rem;margin-top:6px}
-    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .center{text-align:center}
-    .muted{color:var(--muted)}
-    .foot{margin:24px 0;text-align:center;color:var(--muted);font-size:.9rem}
-    .banner{display:none;margin:12px 0;padding:10px 12px;border-radius:12px;background:var(--warnbg);color:var(--warn);border:1px solid #ffe69c}
-    @media (max-width:760px){.row{grid-template-columns:1fr}.grid3{grid-template-columns:1fr}}
-  </style>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Kay & Amy's Birthday</title>
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#faf0e1;--ink:#45413c;--soft:#fff7fb;--line:#ffd7e6;--accent:#ff86b1;}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);font-family:Quicksand,system-ui,sans-serif;color:var(--ink);padding:20px}
+.wrap{max-width:900px;margin:0 auto}
+.hero{display:block;margin:0 auto 10px;width:min(320px,40vw);height:auto;border-radius:12px}
+h1{margin:.2rem 0;color:var(--accent);text-align:center}
+.card{background:var(--soft);border:2px solid var(--line);border-radius:18px;padding:18px;margin:16px 0;box-shadow:0 8px 18px rgba(0,0,0,.05)}
+.card h2{margin:0 0 10px;color:var(--accent)}
+
+.pills{display:flex;flex-wrap:wrap;gap:10px}
+.pill{border:2px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;cursor:pointer;font-weight:700}
+.pill[aria-pressed="true"]{background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;border-color:#ff86b1}
+.pill[disabled]{opacity:.4;cursor:not-allowed}
+
+.input{width:100%;padding:12px 14px;border:2px solid var(--line);border-radius:12px;background:#fff}
+.btn{margin-top:12px;padding:12px 20px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;font-weight:700;cursor:pointer}
+.note{font-size:13px;color:#6e6863}
+.warn{color:#b35300}.ok{color:#2b8a3e}
+
+/* “Who’s coming” cards */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
+.slotCard{border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;background:#fff}
+.slotCard .time{font-weight:700;margin-bottom:6px}
+.slotCard .count{font-size:13px;color:#777}
+.names{margin-top:6px;font-size:13px;color:#555;min-height:18px}
+.names strong{color:#333}
+</style>
 </head>
 <body>
-  <main class="wrap">
-    <img class="hero" src="kay-amy-polariod.png" alt="Polaroid collage of Kay & Amy" />
-    <h1>YOU ARE INVITED!!</h1>
-    <p class="sub">Come celebrate with Kay & Amy.</p>
+<main class="wrap">
+  <img class="hero" src="./kay-amy-polaroid.png" alt="Kay & Amy">
+  <h1>YOU ARE INVITED!!</h1>
+  <h1>Come celebrate with Kay & Amy.</h1>
 
-    <div id="banner" class="banner" role="status" aria-live="polite"></div>
+  <!-- Date & Time (no live grid here anymore) -->
+  <section class="card">
+    <h2>Date & Time</h2>
+    <p><strong>Tuesday, September 2, 2025</strong></p>
+    <p>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
+  </section>
 
-    <!-- Date & Time -->
-    <section class="card" aria-labelledby="dt">
-      <h2 id="dt">Date & Time</h2>
-      <p style="margin:.2rem 0 .6rem 0"><strong>Tuesday, September 2, 2025</strong></p>
-      <small>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></small>
-    </section>
-
-    <!-- RSVP -->
-    <section class="card" aria-labelledby="rsvp">
-      <h2 id="rsvp">RSVP</h2>
-      <div class="row">
-        <div class="field">
-          <label for="name">Your Name</label>
-          <input id="name" type="text" placeholder="e.g., Amy Mon" autocomplete="name" />
+  <!-- RSVP with pill time selection -->
+  <section class="card">
+    <h2>RSVP</h2>
+    <form id="rsvpForm" novalidate>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label>Your Name</label>
+          <input id="name" class="input" required>
         </div>
-        <div class="field">
-          <label for="email">Your Email</label>
-          <input id="email" type="email" placeholder="e.g., amy@email.com" autocomplete="email" />
-        </div>
-      </div>
-
-      <div class="field" style="margin-top:10px">
-        <label>Will you attend?</label>
-        <div class="seg" role="group" aria-label="Attend">
-          <button class="chip" data-status="yes" aria-pressed="false">Yes 🎉</button>
-          <button class="chip" data-status="no" aria-pressed="false">No 😔</button>
+        <div>
+          <label>Your Email</label>
+          <input id="email" class="input" type="email" required>
         </div>
       </div>
 
-      <!-- Time slot selection is hidden until 'Yes' is chosen -->
-      <div id="slotWrap" class="field" hidden>
-        <label>Choose a time slot <span aria-hidden="true">⏰</span></label>
-        <div class="slots" id="slots"></div>
-        <small class="help">Limit 10 guests per slot. Full slots will be disabled.</small>
+      <p style="margin:12px 0 6px;">Will you attend?</p>
+      <div class="pills" role="radiogroup" aria-label="RSVP">
+        <button type="button" class="pill" id="yesBtn" aria-pressed="false">Yes 🎉</button>
+        <button type="button" class="pill" id="noBtn"  aria-pressed="false">No 😢</button>
       </div>
 
-      <div class="center" style="margin-top:14px">
-        <button id="submit" class="btn" disabled>Submit RSVP</button>
-        <div id="msg" class="help"></div>
-        <small class="help">Please enter your name and email.</small>
+      <div id="slotPicker" style="display:none; margin-top:12px;">
+        <p style="margin:0 0 8px;">Choose a time slot ⏰</p>
+        <div id="slotPills" class="pills"></div>
+        <p class="note">Limit 10 guests per slot. Full slots will be disabled.</p>
       </div>
-    </section>
 
-    <!-- Location -->
-    <section class="card" aria-labelledby="loc">
-      <h2 id="loc">📍 Location</h2>
-      <p>16 Freeman St, Quincy, MA 02170</p>
-      <div style="border-radius:12px;overflow:hidden">
-        <iframe title="Map" src="https://www.google.com/maps?q=16%20Freeman%20St%2C%20Quincy%2C%20MA%2002170&z=16&output=embed" width="100%" height="320" style="border:0"></iframe>
-      </div>
-    </section>
+      <button class="btn" type="submit">Submit RSVP</button>
+      <p id="msg" class="note" role="status" aria-live="polite"></p>
+    </form>
+  </section>
 
-    <!-- Diagnostics & Tests -->
-    <section class="card" aria-labelledby="diag">
-      <h2 id="diag">Diagnostics & Tests</h2>
-      <div class="row">
-        <div class="field">
-          <button id="btnPing" class="btn" type="button">Connectivity Test</button>
-          <small>Checks if the app can fetch counts from Google Apps Script.</small>
-        </div>
-        <div class="field">
-          <button id="btnToggleMock" class="btn" type="button">Toggle Mock Mode</button>
-          <small>Use localStorage as a fallback backend for testing or if network is blocked.</small>
-        </div>
-      </div>
-      <div class="help" id="testLog" style="margin-top:8px"></div>
-    </section>
-  </main>
+  <!-- Location -->
+  <section class="card">
+    <h2>📍 Location</h2>
+    <p>16 Freeman St, Quincy, MA 02170</p>
+    <iframe src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed" width="100%" height="300" style="border:0;border-radius:14px" loading="lazy" allowfullscreen></iframe>
+  </section>
+</main>
 
-  <script>
-    // ===== CONFIG =====
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwDxm8wlDsCKJIQ6GQtQ6F4sv2sZprvuhTOiEqpyqFNkLA3_hJiCy0GATQ8v7jO9qEZrg/exec"; // Web App URL
-    const SLOT_CAP = 10;
-    const SLOT_TIMES = [ [11,0],[12,0],[13,0],[14,0],[15,0],[16,0],[17,0],[18,0],[19,0],[20,0] ];
+<script>
+const API   = "https://script.google.com/macros/s/AKfycbwDxm8wlDsCKJIQ6GQtQ6F4sv2sZprvuhTOiEqpyqFNkLA3_hJiCy0GATQ8v7jO9qEZrg/exec";
+const CAP   = 10;
+const SLOTS = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
 
-    // AUTO-MOCK in blocked/sandboxed environments (e.g., local file preview)
-    const USE_MOCK_DEFAULT = (location.protocol === 'file:');
+let summary = {counts:{}, names:{}};
 
-    // ===== UTIL =====
-    const $ = (q, el=document) => el.querySelector(q);
-    const fmt12 = (h,m) => { const am = h < 12; let hh = h % 12; if(hh===0) hh=12; const mm = m.toString().padStart(2,'0'); return `${hh}:${mm} ${am?"AM":"PM"}`; };
-    const sleep = (ms)=> new Promise(r=>setTimeout(r,ms));
+async function loadSummary(){
+  try{
+    const res = await fetch(API + "?action=summary", {cache:"no-store"});
+    const data = await res.json();
+    summary = data.ok ? data : {counts:{},names:{}};
+  }catch{ summary = {counts:{},names:{}}; }
+  renderSlotPills();
+  renderNames();
+}
 
-    function setBanner(text){
-      const b = $('#banner');
-      if(!text){ b.style.display='none'; b.textContent=''; return; }
-      b.style.display='block'; b.textContent = text;
-    }
+document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
+  e.preventDefault(); msg.textContent="";
 
-    // Abortable fetch with timeout; avoid CORS preflight by using text/plain for POST
-    async function safeFetch(url, opts={}, timeoutMs=10000){
-      const ctrl = new AbortController();
-      const t = setTimeout(()=>ctrl.abort(), timeoutMs);
-      try {
-        const o = {mode:'cors', cache:'no-store', redirect:'follow', ...opts, signal: ctrl.signal};
-        o.headers = Object.assign({ 'Accept':'application/json' }, o.headers||{});
-        const res = await fetch(url, o);
-        clearTimeout(t);
-        return res;
-      } catch (e) {
-        clearTimeout(t);
-        throw e;
-      }
-    }
+  const name  = document.getElementById('name').value.trim();
+  const email = document.getElementById('email').value.trim();
 
-    // ===== STATE =====
-    let status = null; let selectedSlot = null;
-    let counts = {}; // {"11:00": 3, ...}
-    let MOCK = USE_MOCK_DEFAULT;
+  if (!name || !email){ msg.textContent="Please enter your name and email."; return; }
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)){ msg.textContent="Please enter a valid email."; return; }
+  if (!attending){ msg.textContent="Please choose Yes or No."; return; }
+  if (attending==='yes' && !chosenSlot){ msg.textContent="Please choose a time slot."; return; }
 
-    const slotWrap = $('#slotWrap'); const slotsEl = $('#slots'); const submitBtn = $('#submit'); const msg = $('#msg');
-    const testLog = $('#testLog');
+  try{
+    const body = new URLSearchParams({name,email,status:attending,slot:chosenSlot});
+    const res  = await fetch(API, {method:"POST", headers:{"Content-Type":"application/x-www-form-urlencoded;charset=UTF-8"}, body});
 
-    // ---- MOCK BACKEND (localStorage) ----
-    const LS_KEY = 'invite-counts';
-    function mockLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || '{}'); }catch{ return {}; } }
-    function mockSave(m){ localStorage.setItem(LS_KEY, JSON.stringify(m)); }
-    async function mockGetCounts(){ counts = mockLoad(); return { ok:true, counts }; }
-    async function mockSubmit(payload){
-      const m = mockLoad();
-      if (payload.status === 'yes'){
-        const c = m[payload.slot] || 0;
-        if (c >= SLOT_CAP) return { ok:false, error:'FULL', counts:m };
-        m[payload.slot] = c + 1;
-      }
-      mockSave(m);
-      return { ok:true, counts:m };
-    }
 
-    // ---- REAL BACKEND (Apps Script) ----
-    async function serverGetCounts(){
-      const res = await safeFetch(`${SCRIPT_URL}?counts=1`, { method:'GET' });
-      if(!res.ok) throw new Error(`GET ${res.status}`);
-      const json = await res.json();
-      return json;
-    }
-    async function serverSubmit(payload){
-      // Use text/plain to make it a CORS "simple request" (no preflight)
-      const res = await safeFetch(SCRIPT_URL, {
-        method:'POST',
-        headers:{ 'Content-Type':'text/plain' },
-        body: JSON.stringify(payload)
-      });
-      if(!res.ok) throw new Error(`POST ${res.status}`);
-      const json = await res.json();
-      return json;
-    }
-
-    // Build slot buttons using current counts
-    function renderSlots(){
-      slotsEl.innerHTML = '';
-      SLOT_TIMES.forEach(([h,m]) => {
-        const key = `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}`;
-        const c = counts[key] || 0;
-        const b = document.createElement('button');
-        b.className = 'slot';
-        b.type = 'button';
-        b.dataset.value = key;
-        b.textContent = `${fmt12(h,m)} — ${c}/${SLOT_CAP}`;
-        b.disabled = c >= SLOT_CAP;
-        b.addEventListener('click', ()=>{
-          document.querySelectorAll('.slot').forEach(s=>s.classList.remove('selected'));
-          b.classList.add('selected');
-          selectedSlot = key;
-          validate();
-        });
-        slotsEl.appendChild(b);
-      });
-    }
-
-    async function refreshCounts(){
-      try{
-        if(MOCK){ const json = await mockGetCounts(); if(json.ok && json.counts){ counts = json.counts; } renderSlots(); return true; }
-        const json = await serverGetCounts();
-        if(json.ok && json.counts){ counts = json.counts; }
-        renderSlots();
-        return true;
-      }catch(err){
-        console.warn('Counts fetch failed:', err);
-        setBanner('Network blocked or script not accessible. Switched to Mock Mode (localStorage).');
-        MOCK = true; // fallback
-        const json = await mockGetCounts();
-        if(json.ok && json.counts){ counts = json.counts; }
-        renderSlots();
-        return false;
-      }
-    }
-
-    // Show slots only when "Yes" chosen
-    document.querySelectorAll('.chip').forEach(ch =>{
-      ch.addEventListener('click', async () =>{
-        document.querySelectorAll('.chip').forEach(x=>x.setAttribute('aria-pressed','false'));
-        ch.setAttribute('aria-pressed','true');
-        status = ch.dataset.status;
-        if(status === 'yes'){
-          slotWrap.hidden = false;
-          await refreshCounts();
-        } else {
-          slotWrap.hidden = true;
-          selectedSlot = null;
-        }
-        validate();
-      });
-    });
-
-    function validate(){
-      const ok = $('#name').value.trim() && $('#email').value.trim() && status && (status==='no' || selectedSlot);
-      submitBtn.disabled = !ok;
-      msg.textContent = '';
-    }
-    ['input','change'].forEach(ev=>{ $('#name').addEventListener(ev, validate); $('#email').addEventListener(ev, validate); });
-
-    // Submit RSVP
-    submitBtn.addEventListener('click', async ()=>{
-      const payload = { name: $('#name').value.trim(), email: $('#email').value.trim(), status, slot: status==='yes' ? selectedSlot : '' };
-      submitBtn.disabled = true; submitBtn.textContent = 'Submitting…';
-      try{
-        let json;
-        if(MOCK){ json = await mockSubmit(payload); }
-        else { json = await serverSubmit(payload); }
-
-        if(!json.ok){
-          if(json.error === 'FULL'){
-            msg.textContent = 'That slot just filled up. Please pick another time.';
-          } else {
-            msg.textContent = json.error || 'Submit failed.';
-          }
-          msg.style.color = '#c62828';
-          submitBtn.textContent = 'Submit RSVP';
-          submitBtn.disabled = false;
-          if(json.counts){ counts = json.counts; renderSlots(); }
-          return;
-        }
-        // Success → update counts live and UI
-        if(json.counts){ counts = json.counts; }
-        renderSlots();
-        msg.textContent = 'Thank you! Your RSVP was recorded.';
-        msg.style.color = '#2e7d32';
-        submitBtn.textContent = 'Submitted ✓';
-      }catch(err){
-        console.error(err);
-        // Final fallback: switch to mock immediately
-        setBanner('Live submit failed. Switched to Mock Mode (localStorage). Your RSVP will save locally.');
-        MOCK = true;
-        const json = await mockSubmit(payload);
-        if(json.counts){ counts = json.counts; renderSlots(); }
-        msg.textContent = 'Saved locally (test mode). Connect network to sync.';
-        msg.style.color = '#2e7d32';
-        submitBtn.textContent = 'Submitted ✓';
-      }
-    });
-
-    // ===== Diagnostics & Tests =====
-    $('#btnPing').addEventListener('click', async ()=>{
-      testLog.textContent = 'Running connectivity test…';
-      try{
-        const okBefore = MOCK ? '(mock active)' : '(live)';
-        const ok = await refreshCounts();
-        testLog.textContent = ok ? `Counts fetch OK ${okBefore}.` : 'Counts fetch failed → Mock mode enabled.';
-      }catch(e){ testLog.textContent = 'Error: '+e; }
-    });
-
-    $('#btnToggleMock').addEventListener('click', async ()=>{
-      MOCK = !MOCK;
-      setBanner(MOCK ? 'Mock Mode enabled (localStorage).' : 'Live mode enabled.');
-      await refreshCounts();
-      testLog.textContent = MOCK ? 'Now using localStorage backend.' : 'Now using Google Apps Script backend.';
-    });
-
-    // Initial banner if auto-mocked
-    if(MOCK){ setBanner('Previewing without network? Mock Mode enabled (localStorage).'); }
-  </script>
+// initial fetch
+loadSummary();
+</script>
 </body>
 </html>
+
+remove live name part 

@@ -24,14 +24,6 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
 .btn{margin-top:12px;padding:12px 20px;border:none;border-radius:14px;background:linear-gradient(90deg,#ff86b1,#ffa8d0);color:#fff;font-weight:700;cursor:pointer}
 .note{font-size:13px;color:#6e6863}
 .warn{color:#b35300}.ok{color:#2b8a3e}
-
-/* “Who’s coming” cards */
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
-.slotCard{border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;background:#fff}
-.slotCard .time{font-weight:700;margin-bottom:6px}
-.slotCard .count{font-size:13px;color:#777}
-.names{margin-top:6px;font-size:13px;color:#555;min-height:18px}
-.names strong{color:#333}
 </style>
 </head>
 <body>
@@ -40,7 +32,7 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
   <h1>YOU ARE INVITED!!</h1>
   <h1>Come celebrate with Kay & Amy.</h1>
 
-  <!-- Date & Time (no live grid here anymore) -->
+  <!-- Date & Time -->
   <section class="card">
     <h2>Date & Time</h2>
     <p><strong>Tuesday, September 2, 2025</strong></p>
@@ -79,12 +71,6 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
     </form>
   </section>
 
-  <!-- Live names BEFORE location -->
-  <section class="card">
-    <h2>Who’s coming (live)</h2>
-    <div id="namesGrid" class="grid"></div>
-  </section>
-
   <!-- Location -->
   <section class="card">
     <h2>📍 Location</h2>
@@ -98,13 +84,12 @@ const API   = "https://script.google.com/macros/s/AKfycbwVyeyMx5mPBAcbsm2J4yHWH5
 const CAP   = 10;
 const SLOTS = ["11:00 am","12:00 pm","1:00 pm","2:00 pm","3:00 pm","4:00 pm","5:00 pm","6:00 pm","7:00 pm","8:00 pm","9:00 pm"];
 
-let summary = {counts:{}, names:{}};
+let summary = {counts:{}};
 
 const yesBtn     = document.getElementById('yesBtn');
 const noBtn      = document.getElementById('noBtn');
 const slotPicker = document.getElementById('slotPicker');
 const slotPills  = document.getElementById('slotPills');
-const namesGrid  = document.getElementById('namesGrid');
 const msg        = document.getElementById('msg');
 
 let attending = "";   // "yes" | "no"
@@ -127,7 +112,7 @@ function renderSlotPills(){
     const btn = document.createElement('button');
     btn.type = 'button';
     btn.className = 'pill';
-    btn.textContent = `${s} — ${n}/${CAP}`;   // <-- backticks
+    btn.textContent = `${s} — ${n}/${CAP}`;
     btn.disabled = n >= CAP;
     btn.setAttribute('aria-pressed', String(chosenSlot === s));
     btn.addEventListener('click', ()=>{
@@ -139,30 +124,13 @@ function renderSlotPills(){
   });
 }
 
-// live names per slot
-function renderNames(){
-  namesGrid.innerHTML = "";
-  SLOTS.forEach(s=>{
-    const div = document.createElement('div');
-    div.className = 'slotCard';
-    const list = summary.names[s] || [];
-    div.innerHTML = `
-      <div class="time">${s}</div>
-      <div class="count">${list.length}/${CAP}</div>
-      <div class="names">${list.length ? '<strong>Guests:</strong> ' + list.join(', ') : '-'}</div>
-    `;
-    namesGrid.appendChild(div);
-  });
-}
-
 async function loadSummary(){
   try{
     const res = await fetch(API + "?action=summary", {cache:"no-store"});
     const data = await res.json();
-    summary = data.ok ? data : {counts:{},names:{}};
-  }catch{ summary = {counts:{},names:{}}; }
+    summary = data.ok ? data : {counts:{}};
+  }catch{ summary = {counts:{}}; }
   renderSlotPills();
-  renderNames();
 }
 
 document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{

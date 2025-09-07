@@ -25,13 +25,16 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
 .note{font-size:13px;color:#6e6863}
 .warn{color:#b35300}.ok{color:#2b8a3e}
 
-/* optional: “Who’s coming” section (hidden by default) */
+/* Who’s coming grid */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px}
 .slotCard{border:2px solid var(--line);border-radius:16px;padding:12px;text-align:center;background:#fff}
 .slotCard .time{font-weight:700;margin-bottom:6px}
 .slotCard .count{font-size:13px;color:#777}
 .names{margin-top:6px;font-size:13px;color:#555;min-height:18px}
 .names strong{color:#333}
+/* Bulleted list styling */
+.names ul{margin:6px 0 0;padding-left:18px;text-align:left}
+.names li{font-size:13px;color:#555;margin:2px 0}
 </style>
 </head>
 <body>
@@ -45,6 +48,13 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
     <h2>Date & Time</h2>
     <p><strong>Tuesday, September 2, 2025</strong></p>
     <p>Time slots from <strong>11:00 AM</strong> to <strong>9:00 PM</strong></p>
+  </section>
+
+  <!-- Who’s Coming (always visible, now before RSVP) -->
+  <section id="who" class="card">
+    <h2>Who’s Coming</h2>
+    <div id="whoGrid" class="grid"></div>
+    <p id="whoEmpty" class="note" style="margin-top:6px; display:none;">RSVPs will appear here.</p>
   </section>
 
   <!-- RSVP -->
@@ -85,12 +95,6 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
     <p>16 Freeman St, Quincy, MA 02170</p>
     <iframe src="https://www.google.com/maps?q=16+Freeman+St,+Quincy,+MA+02170&output=embed" width="100%" height="300" style="border:0;border-radius:14px" loading="lazy" allowfullscreen></iframe>
   </section>
-
-  <!-- Optional “Who’s coming” (kept hidden unless you want to show it) -->
-  <section id="who" class="card" style="display:none">
-    <h2>Who’s Coming</h2>
-    <div id="whoGrid" class="grid"></div>
-  </section>
 </main>
 
 <script>
@@ -109,6 +113,7 @@ const slotPicker = document.getElementById('slotPicker');
 const slotPills  = document.getElementById('slotPills');
 const msg        = document.getElementById('msg');
 const whoGrid    = document.getElementById('whoGrid');
+const whoEmpty   = document.getElementById('whoEmpty');
 
 // Toggle helpers
 function setPressed(el, pressed){
@@ -144,7 +149,6 @@ function renderSlotPills(){
     btn.textContent = `${slot} ${count}/${CAP}`;
     if (full) btn.disabled = true;
     btn.addEventListener('click', () => {
-      // select this slot
       Array.from(slotPills.querySelectorAll('.pill')).forEach(p=>setPressed(p,false));
       setPressed(btn,true);
       chosenSlot = slot;
@@ -153,28 +157,32 @@ function renderSlotPills(){
   });
 }
 
-// Optional: show a simple “who’s coming” grid (kept hidden by default)
+// Always-visible “Who’s Coming” (bulleted names)
 function renderNames(){
-  const whoSection = document.getElementById('who');
-  if (!summary.names || Object.keys(summary.names).length === 0) {
-    whoSection.style.display = 'none';
-    whoGrid.innerHTML = '';
-    return;
-  }
-  whoSection.style.display = 'block';
   whoGrid.innerHTML = '';
+  let totalNames = 0;
+
   SLOTS.forEach(slot => {
     const people = summary.names?.[slot] || [];
+    totalNames += people.length;
     if (!people.length) return;
+
     const card = document.createElement('div');
     card.className = 'slotCard';
     card.innerHTML = `
       <div class="time">${slot}</div>
       <div class="count">${people.length}/${CAP}</div>
-      <div class="names">${people.map(n=>`<strong>${escapeHtml(n)}</strong>`).join(', ')}</div>
+      <div class="names">
+        <ul>
+          ${people.map(n=>`<li><strong>${escapeHtml(n)}</strong></li>`).join('')}
+        </ul>
+      </div>
     `;
     whoGrid.appendChild(card);
   });
+
+  // Show placeholder text when there are no RSVPs yet
+  whoEmpty.style.display = totalNames === 0 ? 'block' : 'none';
 }
 
 // Fetch current counts/names
@@ -225,10 +233,8 @@ document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
         : "Thanks for letting us know. We’ll miss you!";
       msg.className = 'note ok';
 
-      // refresh counts and reset selection where appropriate
       await loadSummary();
 
-      // Keep name/email for convenience, but clear slot + rsvp choice
       attending = null;
       chosenSlot = null;
       setPressed(yesBtn,false); setPressed(noBtn,false);
@@ -237,7 +243,6 @@ document.getElementById('rsvpForm').addEventListener('submit', async (e)=>{
     }else{
       msg.textContent = data.error || "Something went wrong. Please try again.";
       msg.className = 'note warn';
-      // In case slot just filled up, refresh availability
       await loadSummary();
     }
   }catch(err){

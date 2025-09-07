@@ -35,6 +35,10 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
 /* Bulleted list styling */
 .names ul{margin:6px 0 0;padding-left:18px;text-align:left}
 .names li{font-size:13px;color:#555;margin:2px 0}
+
+/* Menu image */
+.menu-img{display:block;width:100%;height:auto;border-radius:14px;border:2px solid var(--line);background:#fff}
+.menu-caption{font-size:13px;color:#6e6863;margin-top:6px;text-align:center}
 </style>
 </head>
 <body>
@@ -87,6 +91,13 @@ h1{margin:.2rem 0;color:var(--accent);text-align:center}
       <button class="btn" type="submit">Submit RSVP</button>
       <p id="msg" class="note" role="status" aria-live="polite"></p>
     </form>
+  </section>
+
+  <!-- Menu (NEW, after RSVP) -->
+  <section class="card">
+    <h2>Menu</h2>
+    <img class="menu-img" src="./menu.png" alt="Party menu with mains, sides, drinks, desserts, and other beverages">
+    <div class="menu-caption">Menu is subject to small changes on the day 🌟</div>
   </section>
 
   <!-- Location -->
